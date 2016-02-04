@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE detection-run SYSTEM "http://kismetwireless.net/kismet-3.1.0.dtd">
+<detection-run kismet-version="2013.03.R0" start-time="Sat Nov 15 13:00:00 2014" end-time="na">
+    <card-source uuid="xxxxxxxx-yyyy-zzzz-aaaa-bbbbbbbbbbbb">
+        <card-source>wlan0:name=AT,hop=true,channel=1,9,3,11,6,4,12,5,13,7,2,10,8</card-source>
+        <card-name>AT</card-name>
+        <card-interface>wlan0mon</card-interface>
+        <card-type>ath9k</card-type>
+        <card-packets>99999991</card-packets>
+        <card-hop>true</card-hop>
+        <card-channels>1,5,9,13,2,6,10,3,7,11,4,8,12</card-channels>
+    </card-source>
+    <card-source uuid="mmmmmmmm-yyyy-zzzz-aaaa-bbbbbbbbbbbb">
+        <card-source>wlan0:name=AT,hop=true,channel=1,9,3,11,6,4,12,5,13,7,2,10,8</card-source>
+        <card-name>AT</card-name>
+        <card-interface>wlan0mon</card-interface>
+        <card-type>ath9k</card-type>
+        <card-packets>99999991</card-packets>
+        <card-hop>true</card-hop>
+        <card-channels>1,5,9,13,2,6,10,3,7,11,4,8,12</card-channels>
+    </card-source>
+    <wireless-network number="1" type="infrastructure" first-time="Sat Nov 15 14:00:00 2014" last-time="Sat Nov 15 14:59:59 2014">
+        <SSID first-time="Sat Nov 15 14:10:00 2014" last-time="Sat Nov 15 14:10:59 2014">
+            <type>Beacon</type>
+            <max-rate>54.000000</max-rate>
+            <packets>954</packets>
+            <beaconrate>10</beaconrate>
+            <wps>Locked</wps>
+            <wps-manuf>WPS-Manuf</wps-manuf>
+            <dev-name>Dev-name</dev-name>
+            <model-name>Model-name</model-name>
+            <model-num>Model-num</model-num>
+            <encryption>WPA+TKIP</encryption>
+            <encryption>WPA+PSK</encryption>
+            <encryption>WPA+AES-CCM</encryption>
+            <wpa-version>WPA+WPA2</wpa-version>
+            <essid cloaked="true">EssD</essid>
+            <info>This is first SSID Info</info>
+        </SSID>
+        <SSID first-time="Sat Nov 15 14:20:00 2014" last-time="Sat Nov 15 14:20:59 2014">
+            <type>Probe Response</type>
+            <max-rate>53.000000</max-rate>
+            <packets>999</packets>
+            <beaconrate>100</beaconrate>
+            <wps>Configured</wps>
+            <wps-manuf>WPS-Manuf2</wps-manuf>
+            <dev-name>Dev-name2</dev-name>
+            <model-name>Model-name2</model-name>
+            <model-num>Model-num2</model-num>
+            <encryption>WPA+LEAP</encryption>
+            <encryption>PPTP</encryption>
+            <essid cloaked="false">SEConD EssD</essid>
+            <info>This is seCONd SSID Info</info>
+        </SSID>
+        <BSSID>00:11:22:33:44:55</BSSID>
+        <manuf>D-LinkIn</manuf>
+        <channel>10</channel>
+        <freqmhz>0 1</freqmhz>
+        <maxseenrate>888</maxseenrate>
+        <carrier>IEEE 802.11b</carrier>
+        <carrier>IEEE 802.11g</carrier>
+        <encoding>CCK</encoding>
+        <encoding>OFDM</encoding>
+        <packets>
+            <LLC>1</LLC>
+            <data>13</data>
+            <crypt>256</crypt>
+            <total>789</total>
+            <fragments>7897</fragments>
+            <retries>889</retries>
+        </packets>
+        <datasize>987</datasize>
+        <snr-info>
+            <last_signal_dbm>1</last_signal_dbm>
+            <last_noise_dbm>2</last_noise_dbm>
+            <last_signal_rssi>3</last_signal_rssi>
+            <last_noise_rssi>4</last_noise_rssi>
+            <min_signal_dbm>5</min_signal_dbm>
+            <min_noise_dbm>6</min_noise_dbm>
+            <min_signal_rssi>7</min_signal_rssi>
+            <min_noise_rssi>8</min_noise_rssi>
+            <max_signal_dbm>9</max_signal_dbm>
+            <max_noise_dbm>10</max_noise_dbm>
+            <max_signal_rssi>11</max_signal_rssi>
+            <max_noise_rssi>12</max_noise_rssi>
+        </snr-info>
+        <gps-info unit="english">
+            <min-lat>12.34</min-lat>
+            <min-lon>12.35</min-lon>
+            <min-alt>12.36</min-alt>
+            <min-spd>12.37</min-spd>
+            <max-lat>12.38</max-lat>
+            <max-lon>12.39</max-lon>
+            <max-alt>12.40</max-alt>
+            <max-spd>12.41</max-spd>
+            <peak-lat>12.42</peak-lat>
+            <peak-lon>12.43</peak-lon>
+            <peak-alt>12.44</peak-alt>
+            <avg-lat>12.45</avg-lat>
+            <avg-lon>12.46</avg-lon>
+            <avg-alt>12.47</avg-alt>
+        </gps-info>
+        <ip-address type="UDP/TCP">
+            <ip-block>10.10.110.1</ip-block>
+            <ip-netmask>0.0.0.0</ip-netmask>
+            <ip-gateway>0.0.0.0</ip-gateway>
+        </ip-address>
+        <bsstimestamp>2344575283574</bsstimestamp>
+        <cdp-device>CDP-DEV</cdp-device>
+        <cdp-portid>CDP-PORTID</cdp-portid>
+        <dhcp-hostname>DHCP-host-net</dhcp-hostname>
+        <dhcp-vendor>DHCP-vendor-net</dhcp-vendor>
+        <seen-card>
+            <seen-uuid>xxxxxxxx-yyyy-zzzz-aaaa-bbbbbbbbbbbb</seen-uuid>
+            <seen-time>Sat Nov 15 14:09:57 2014</seen-time>
+            <seen-packets>178</seen-packets>
+        </seen-card>
+        <seen-card>
+            <seen-uuid>mmmmmmmm-yyyy-zzzz-aaaa-bbbbbbbbbbbb</seen-uuid>
+            <seen-time>Sat Nov 15 14:11:59 2014</seen-time>
+            <seen-packets>178</seen-packets>
+        </seen-card>
+        <wireless-client number="1" type="fromds" first-time="Sat Nov 15 14:20:00 2014" last-time="Sat Nov 15 14:20:59 2014" wep="false">
+            <client-mac>22:33:44:55:66:77</client-mac>
+            <client-manuf>D-LinkIn</client-manuf>
+            <SSID first-time="Sat Nov 15 14:30:00 2014" last-time="Sat Nov 15 14:30:59 2014">
+                <type>Probe Response</type>
+                <max-rate>22.000000</max-rate>
+                <packets>8</packets>
+                <beaconrate>109</beaconrate>
+                <encryption>WPA+TKIP</encryption>
+                <encryption>WPA+AES-CCM</encryption>
+                <ssid>Client SSiD</ssid>
+                <info>Client SSiD info</info>
+            </SSID>
+            <SSID first-time="Sat Nov 15 14:40:00 2014" last-time="Sat Nov 15 14:40:59 2014">
+                <type>Probe Request</type>
+                <max-rate>21.000000</max-rate>
+                <packets>12</packets>
+                <beaconrate>115</beaconrate>
+                <encryption>WPA+TKIP</encryption>
+                <encryption>WEP104</encryption>
+                <ssid>Client SSiD</ssid>
+                <info>Client SSiD info</info>
+            </SSID>
+            <channel>12</channel>
+            <freqmhz>256 1</freqmhz>
+            <maxseenrate>5</maxseenrate>
+            <carrier>IEEE 802.11b+</carrier>
+            <carrier>IEEE 802.11 DSSS</carrier>
+            <encoding>PBCC</encoding>
+            <encoding>OFDM</encoding>
+            <packets>
+                <LLC>654</LLC>
+                <data>655</data>
+                <crypt>656</crypt>
+                <total>657</total>
+                <fragments>658</fragments>
+                <retries>659</retries>
+            </packets>
+            <datasize>98741</datasize>
+            <snr-info>
+                <last_signal_dbm>81</last_signal_dbm>
+                <last_noise_dbm>82</last_noise_dbm>
+                <last_signal_rssi>83</last_signal_rssi>
+                <last_noise_rssi>84</last_noise_rssi>
+                <min_signal_dbm>85</min_signal_dbm>
+                <min_noise_dbm>86</min_noise_dbm>
+                <min_signal_rssi>87</min_signal_rssi>
+                <min_noise_rssi>88</min_noise_rssi>
+                <max_signal_dbm>89</max_signal_dbm>
+                <max_noise_dbm>90</max_noise_dbm>
+                <max_signal_rssi>91</max_signal_rssi>
+                <max_noise_rssi>92</max_noise_rssi>
+            </snr-info>
+            <gps-info unit="english">
+                <min-lat>112.34</min-lat>
+                <min-lon>112.35</min-lon>
+                <min-alt>112.36</min-alt>
+                <min-spd>112.37</min-spd>
+                <max-lat>112.38</max-lat>
+                <max-lon>112.39</max-lon>
+                <max-alt>112.40</max-alt>
+                <max-spd>112.41</max-spd>
+                <peak-lat>112.42</peak-lat>
+                <peak-lon>112.43</peak-lon>
+                <peak-alt>112.44</peak-alt>
+                <avg-lat>112.45</avg-lat>
+                <avg-lon>112.46</avg-lon>
+                <avg-alt>112.47</avg-alt>
+            </gps-info>
+            <ip-address type="UDP/TCP">
+                <ip-block>3.3.3.3</ip-block>
+                <ip-netmask>1.1.1.1</ip-netmask>
+                <ip-gateway>2.2.2.2</ip-gateway>
+            </ip-address>
+            <cdp-device>CDP-DEV-CLIENT</cdp-device>
+            <cdp-portid>CDP-PORTID-CLIENT</cdp-portid>
+            <dhcp-hostname>DHCP-host-client</dhcp-hostname>
+            <dhcp-vendor>DHCP-vendor-client</dhcp-vendor>
+            <seen-card>
+                <seen-uuid>xxxxxxxx-yyyy-zzzz-aaaa-bbbbbbbbbbbb</seen-uuid>
+                <seen-time>Sat Nov 15 14:09:57 2014</seen-time>
+                <seen-packets>178</seen-packets>
+            </seen-card>
+            <seen-card>
+                <seen-uuid>mmmmmmmm-yyyy-zzzz-aaaa-bbbbbbbbbbbb</seen-uuid>
+                <seen-time>Sat Nov 15 14:09:59 2014</seen-time>
+                <seen-packets>178</seen-packets>
+            </seen-card>
+        </wireless-client>
+    </wireless-network>
+</detection-run>

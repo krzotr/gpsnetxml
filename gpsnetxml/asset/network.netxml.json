@@ -1,0 +1,246 @@
+[
+    {
+        "number": 1, 
+        "type": "infrastructure", 
+        "first_time": "Sat Nov 15 14:00:00 2014", 
+        "last_time": "Sat Nov 15 14:59:59 2014", 
+        "ssids": [
+            {
+                "first_time": "Sat Nov 15 14:10:00 2014", 
+                "last_time": "Sat Nov 15 14:10:59 2014", 
+                "type": "Beacon", 
+                "max_rate": 54.0, 
+                "packets": 954, 
+                "beaconrate": 10, 
+                "wps": "Locked", 
+                "wps_manuf": "WPS-Manuf", 
+                "dev_name": "Dev-name", 
+                "model_name": "Model-name", 
+                "model_num": "Model-num", 
+                "encryption": [
+                    "WPA+TKIP", 
+                    "WPA+PSK", 
+                    "WPA+AES-CCM"
+                ], 
+                "wpa_version": "WPA+WPA2", 
+                "dot11d": {}, 
+                "essid": "EssD", 
+                "cloaked": false, 
+                "info": "This is first SSID Info"
+            }, 
+            {
+                "first_time": "Sat Nov 15 14:20:00 2014", 
+                "last_time": "Sat Nov 15 14:20:59 2014", 
+                "type": "Probe Response", 
+                "max_rate": 53.0, 
+                "packets": 999, 
+                "beaconrate": 100, 
+                "wps": "Configured", 
+                "wps_manuf": "WPS-Manuf2", 
+                "dev_name": "Dev-name2", 
+                "model_name": "Model-name2", 
+                "model_num": "Model-num2", 
+                "encryption": [
+                    "WPA+LEAP", 
+                    "PPTP"
+                ], 
+                "wpa_version": "", 
+                "dot11d": {}, 
+                "essid": "SEConD EssD", 
+                "cloaked": false, 
+                "info": "This is seCONd SSID Info"
+            }
+        ], 
+        "bssid": "00:11:22:33:44:55", 
+        "manuf": "D-LinkIn", 
+        "channel": 10, 
+        "freqmhz": {
+            "0": 1
+        }, 
+        "maxseenrate": 888, 
+        "carrier": [
+            "IEEE 802.11b", 
+            "IEEE 802.11g"
+        ], 
+        "encoding": [
+            "CCK", 
+            "OFDM"
+        ], 
+        "packets": {
+            "llc": 1, 
+            "data": 13, 
+            "crypt": 256, 
+            "total": 789, 
+            "fragments": 7897, 
+            "retries": 889
+        }, 
+        "datasize": 987, 
+        "snr_info": {
+            "last_signal_dbm": 1, 
+            "last_noise_dbm": 2, 
+            "last_signal_rssi": 3, 
+            "last_noise_rssi": 4, 
+            "min_signal_dbm": 5, 
+            "min_noise_dbm": 6, 
+            "min_signal_rssi": 7, 
+            "min_noise_rssi": 8, 
+            "max_signal_dbm": 9, 
+            "max_noise_dbm": 10, 
+            "max_signal_rssi": 11, 
+            "max_noise_rssi": 12
+        }, 
+        "gps_info": {
+            "min-lat": 12.34, 
+            "min-lon": 12.35, 
+            "min-alt": 12.36, 
+            "min-spd": 12.37, 
+            "max-lat": 12.38, 
+            "max-lon": 12.39, 
+            "max-alt": 12.4, 
+            "max-spd": 12.41, 
+            "peak-lat": 12.42, 
+            "peak-lon": 12.43, 
+            "peak-alt": 12.44, 
+            "avg-lat": 12.45, 
+            "avg-lon": 12.46, 
+            "avg-alt": 12.47
+        }, 
+        "tag": [], 
+        "ip_address": {
+            "ip_type": "UDP/TCP", 
+            "ip_block": "10.10.110.1", 
+            "ip_netmask": "0.0.0.0", 
+            "ip_gateway": "0.0.0.0"
+        }, 
+        "bsstimestamp": 2344575283574, 
+        "cdp_device": "CDP-DEV", 
+        "cdp_portid": "CDP-PORTID", 
+        "dhcp_hostname": "DHCP-host-net", 
+        "dhcp_vendor": "DHCP-vendor-net", 
+        "seen-cards": {
+            "xxxxxxxx-yyyy-zzzz-aaaa-bbbbbbbbbbbb": {
+                "packets": 178, 
+                "time": "Sat Nov 15 14:09:57 2014"
+            }, 
+            "mmmmmmmm-yyyy-zzzz-aaaa-bbbbbbbbbbbb": {
+                "packets": 178, 
+                "time": "Sat Nov 15 14:11:59 2014"
+            }
+        }, 
+        "wireless_client": [
+            {
+                "number": 1, 
+                "type": "fromds", 
+                "first_time": "Sat Nov 15 14:20:00 2014", 
+                "last_time": "Sat Nov 15 14:20:59 2014", 
+                "client_mac": "22:33:44:55:66:77", 
+                "client_manuf": "D-LinkIn", 
+                "ssids": [
+                    {
+                        "first_time": "Sat Nov 15 14:30:00 2014", 
+                        "last_time": "Sat Nov 15 14:30:59 2014", 
+                        "type": "Probe Response", 
+                        "max_rate": 22.0, 
+                        "packets": 8, 
+                        "beaconrate": 109, 
+                        "dot11d": {}, 
+                        "encryption": [
+                            "WPA+TKIP", 
+                            "WPA+AES-CCM"
+                        ], 
+                        "essid": "Client SSiD", 
+                        "info": "Client SSiD info"
+                    }, 
+                    {
+                        "first_time": "Sat Nov 15 14:40:00 2014", 
+                        "last_time": "Sat Nov 15 14:40:59 2014", 
+                        "type": "Probe Request", 
+                        "max_rate": 21.0, 
+                        "packets": 12, 
+                        "beaconrate": 115, 
+                        "dot11d": {}, 
+                        "encryption": [
+                            "WPA+TKIP", 
+                            "WEP104"
+                        ], 
+                        "essid": "Client SSiD", 
+                        "info": "Client SSiD info"
+                    }
+                ], 
+                "channel": 12, 
+                "freqmhz": {
+                    "256": 1
+                }, 
+                "maxseenrate": 5.0, 
+                "carrier": [
+                    "IEEE 802.11b+", 
+                    "IEEE 802.11 DSSS"
+                ], 
+                "encoding": [
+                    "PBCC", 
+                    "OFDM"
+                ], 
+                "packets": {
+                    "llc": 654, 
+                    "data": 655, 
+                    "crypt": 656, 
+                    "total": 657, 
+                    "fragments": 658, 
+                    "retries": 659
+                }, 
+                "datasize": 98741, 
+                "snr_info": {
+                    "last_signal_dbm": 81, 
+                    "last_noise_dbm": 82, 
+                    "last_signal_rssi": 83, 
+                    "last_noise_rssi": 84, 
+                    "min_signal_dbm": 85, 
+                    "min_noise_dbm": 86, 
+                    "min_signal_rssi": 87, 
+                    "min_noise_rssi": 88, 
+                    "max_signal_dbm": 89, 
+                    "max_noise_dbm": 90, 
+                    "max_signal_rssi": 91, 
+                    "max_noise_rssi": 92
+                }, 
+                "gps_info": {
+                    "min-lat": 112.34, 
+                    "min-lon": 112.35, 
+                    "min-alt": 112.36, 
+                    "min-spd": 112.37, 
+                    "max-lat": 112.38, 
+                    "max-lon": 112.39, 
+                    "max-alt": 112.4, 
+                    "max-spd": 112.41, 
+                    "peak-lat": 112.42, 
+                    "peak-lon": 112.43, 
+                    "peak-alt": 112.44, 
+                    "avg-lat": 112.45, 
+                    "avg-lon": 112.46, 
+                    "avg-alt": 112.47
+                }, 
+                "ip_address": {
+                    "ip_type": "UDP/TCP", 
+                    "ip_block": "3.3.3.3", 
+                    "ip_netmask": "1.1.1.1", 
+                    "ip_gateway": "2.2.2.2"
+                }, 
+                "cdp_device": "CDP-DEV-CLIENT", 
+                "cdp_portid": "CDP-PORTID-CLIENT", 
+                "dhcp_hostname": "DHCP-host-client", 
+                "dhcp_vendor": "DHCP-vendor-client", 
+                "seencards": {
+                    "xxxxxxxx-yyyy-zzzz-aaaa-bbbbbbbbbbbb": {
+                        "packets": 178, 
+                        "time": "Sat Nov 15 14:09:57 2014"
+                    }, 
+                    "mmmmmmmm-yyyy-zzzz-aaaa-bbbbbbbbbbbb": {
+                        "packets": 178, 
+                        "time": "Sat Nov 15 14:09:59 2014"
+                    }
+                }, 
+                "tag": []
+            }
+        ]
+    }
+]
