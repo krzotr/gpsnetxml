@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <!-- More information about types: gpscore.h -->
+    <xs:simpleType name="lat">
+        <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="-90.0" />
+            <xs:maxInclusive value="90.0" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="lon">
+        <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="-180.0" />
+            <xs:maxInclusive value="180.0" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="spd">
+        <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="-100000.0" />
+            <xs:maxInclusive value="100000.0" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="alt">
+        <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="-100000.0" />
+            <xs:maxInclusive value="100000.0" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="time_usec">
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="0" />
+            <xs:maxInclusive value="999999" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="heading">
+        <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="0.0" />
+            <xs:maxInclusive value="360.0" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="fix">
+        <xs:restriction base="xs:int">
+            <xs:enumeration value="2" />
+            <xs:enumeration value="3" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="signal_dbm">
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="-128" />
+            <xs:maxInclusive value="127" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="mac">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}" />
+            <xs:pattern value="GP:SD:TR:AC:KL:OG" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Required for gps-tracking - GP:SD:TR:AC:KL:OG -->
+    <xs:complexType name="gps-tracking">
+        <xs:attribute name="bssid" type="mac" use="required" />
+        <xs:attribute name="time-sec" type="xs:positiveInteger" use="required" />
+        <xs:attribute name="time-usec" type="time_usec" use="required" />
+        <xs:attribute name="lat" type="lat" use="required" />
+        <xs:attribute name="lon" type="lon" use="required" />
+        <xs:attribute name="spd" type="spd" use="required" />
+        <xs:attribute name="heading" type="heading" use="required" />
+        <xs:attribute name="fix" type="fix" use="required" />
+        <xs:attribute name="alt" type="alt" />
+        <xs:attribute name="hdop" type="xs:decimal" />
+        <xs:attribute name="vdop" type="xs:decimal" />
+    </xs:complexType>
+
+    <xs:complexType name="gps-point">
+        <xs:complexContent>
+            <xs:extension base="gps-tracking">
+                <xs:attribute name="source" type="mac" />
+                <xs:attribute name="signal_rssi" type="xs:int" />
+                <xs:attribute name="noise_rssi" type="xs:int" />
+                <xs:attribute name="signal_dbm" type="signal_dbm" />
+                <xs:attribute name="noise_dbm" type="xs:int" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- Based on dumpfile_gpsxml.cc -->
+    <xs:element name="gps-run">
+        <xs:complexType>
+            <xs:sequence>
+                <!-- network-file has supported since
+                9b5fcff6fcfd9a217085fe7a676cb34fcce46257 -->
+                <xs:element name="network-file" type="xs:string" minOccurs="0" />
+
+                <xs:sequence>
+                    <xs:element name="gps-point" type="gps-point" minOccurs="0" maxOccurs="unbounded" />
+                </xs:sequence>
+            </xs:sequence>
+            <xs:attribute name="gps-version" type="xs:string" />
+            <xs:attribute name="start-time" type="xs:string" />
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
