@@ -1,0 +1,27 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
+import json
+import argparse
+from gpsnetxml import ParseGpsxml
+from gpsnetxml import ParseNetxml
+
+p = argparse.ArgumentParser(description="Convert gpsxml or netxml file to json",
+                            prog="gpsnetxml",)
+p.add_argument("-t", nargs=1, choices=["gps", "net"],
+               required=True, help="File type gpsxml or netxml")
+p.add_argument("file", nargs=1, help="Source file")
+
+args = p.parse_args()
+
+if args.t[0] == "gps":
+    gps = ParseGpsxml(args.file[0])
+
+    for g in gps.get_points():
+        print(json.dumps(g, indent=4) + ",")
+else:
+    net = ParseNetxml(args.file[0])
+
+    for n in net.get_networks():
+        print(json.dumps(n, indent=4) + ",")
