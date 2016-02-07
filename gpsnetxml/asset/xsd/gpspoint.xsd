@@ -95,10 +95,8 @@
     <xs:element name="gps-run">
         <xs:complexType>
             <xs:sequence>
-                <!-- network-file has supported since
-                9b5fcff6fcfd9a217085fe7a676cb34fcce46257 -->
+                <!-- supported since 9b5fcff6fcfd9a217085fe7a676cb34fcce46257 -->
                 <xs:element name="network-file" type="xs:string" minOccurs="0" />
-
                 <xs:sequence>
                     <xs:element name="gps-point" type="gps-point" minOccurs="0" maxOccurs="unbounded" />
                 </xs:sequence>

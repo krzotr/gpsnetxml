@@ -72,7 +72,31 @@
             <xs:element name="max-rate" type="xs:decimal" />
             <xs:element name="packets" type="xs:nonNegativeInteger" />
             <xs:element name="beaconrate" type="xs:positiveInteger" minOccurs="0" />
+            <!-- WPS since 2016.01.R1, backward compatibility so minOccurs="0" -->
+            <xs:element name="wps" minOccurs="0">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Locked" />
+                        <xs:enumeration value="Configured" />
+                        <xs:enumeration value="Not Configured" />
+                        <xs:enumeration value="No" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="wps-manuf" type="xs:string" minOccurs="0" />
+            <xs:element name="dev-name" type="xs:string" minOccurs="0" />
+            <xs:element name="model-name" type="xs:string" minOccurs="0" />
+            <xs:element name="model-num" type="xs:string" minOccurs="0" />
             <xs:element name="encryption" type="encryption" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="wpa-version" minOccurs="0">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="WPA+WPA2" />
+                        <xs:enumeration value="WPA" />
+                        <xs:enumeration value="WPA2" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
             <xs:element name="dot11d" type="dot11d" minOccurs="0" />
             <xs:element name="essid" minOccurs="0">
                 <xs:complexType>
@@ -104,8 +128,8 @@
             <xs:element name="max-rate" type="xs:decimal" />
             <xs:element name="packets" type="xs:nonNegativeInteger" />
             <xs:element name="beaconrate" type="xs:positiveInteger" minOccurs="0" />
-            <xs:element name="encryption" type="encryption" minOccurs="0" maxOccurs="unbounded" />
             <xs:element name="dot11d" type="dot11d" minOccurs="0" />
+            <xs:element name="encryption" type="encryption" minOccurs="0" maxOccurs="unbounded" />
             <xs:element name="ssid" type="xs:string" minOccurs="0" />
             <xs:element name="info" type="xs:string" minOccurs="0" />
         </xs:sequence>
@@ -287,7 +311,7 @@
                             <xs:element name="datasize" type="xs:nonNegativeInteger" />
                             <xs:element name="snr-info" type="snr-info" minOccurs="0" />
                             <xs:element name="gps-info" type="gps-info" minOccurs="0" />
-                            <xs:element name="tag" type="tag" minOccurs="0" />
+                            <xs:element name="tag" type="tag" minOccurs="0" maxOccurs="unbounded" />
                             <xs:element name="ip-address" type="ip-address" minOccurs="0" />
                             <xs:element name="bsstimestamp" type="xs:nonNegativeInteger" />
                             <xs:element name="cdp-device" type="xs:string" />
@@ -317,7 +341,7 @@
                                         <xs:element name="dhcp-hostname" type="xs:string" minOccurs="0" />
                                         <xs:element name="dhcp-vendor" type="xs:string" minOccurs="0" />
                                         <xs:element name="seen-card" type="seen-card" maxOccurs="unbounded" />
-                                        <xs:element name="tag" type="tag" minOccurs="0" />
+                                        <xs:element name="tag" type="tag" minOccurs="0" maxOccurs="unbounded" />
                                     </xs:sequence>
                                     <xs:attribute name="number" type="xs:positiveInteger" use="required" />
                                     <xs:attribute name="type" use="required">

@@ -171,6 +171,39 @@ class ParseNetxml(object):
 
         return out
 
+    def get_dot11d(self, node):
+        try:
+            dot11d = node.findall("dot11d")[0]
+        except:
+            return {}
+
+        out = {}
+
+        out["country"] = self.get_xml_attrib(dot11d, "country").strip(" ")
+        out["range"] = []
+
+        try:
+            for d in dot11d.findall("dot11d-range"):
+                out["range"].append(OrderedDict([
+                    ("start", self.get_xml_attrib(d, "start", 0)),
+                    ("end", self.get_xml_attrib(d, "end", 0)),
+                    ("max_power", self.get_xml_attrib(d, "max-power", 0)),
+                ]))
+        except:
+            pass
+
+        return out
+
+    def get_tags(self, node):
+        out = {}
+
+        for t in node.findall("tag"):
+            name = self.get_xml_attrib(t, "name", "")
+
+            out[name] = t.text.strip(" ")
+
+        return out
+
     """Get whole gps-info element"""
     def get_gpsinfo(self, node):
         return self._get_multiple_values(node, self.gps_info_elements,
@@ -236,6 +269,7 @@ class ParseNetxml(object):
                     ("beaconrate", self.get_xml_element_value(
                         ssid, "beaconrate", 0)),
 
+                    # Since Kismet-2016.01.R1
                     ("wps", self.get_xml_element_value(ssid, "wps", "No")),
                     ("wps_manuf", self.get_xml_element_value(
                         ssid, "wps-manuf")),
@@ -246,11 +280,12 @@ class ParseNetxml(object):
                         ssid, "model-num")),
 
                     ("encryption", self.get_xml_values(ssid, "encryption")),
+
+                    # Since Kismet-2016.01.R1
                     ("wpa_version", self.get_xml_element_value(
                         ssid, "wpa-version")),
 
-                    # @todo
-                    ("dot11d", {}),
+                    ("dot11d", self.get_dot11d(ssid)),
 
                     ("essid", self.get_xml_element_value(ssid, "essid", "")),
                     ("cloaked", self.get_cloaked(ssid)),
@@ -278,8 +313,7 @@ class ParseNetxml(object):
                     ("beaconrate", self.get_xml_element_value(
                         ssid, "beaconrate", 0)),
 
-                    # @todo
-                    ("dot11d", {}),
+                    ("dot11d", self.get_dot11d(ssid)),
                     ("encryption", self.get_xml_values(ssid, "encryption")),
 
                     ("essid", self.get_xml_element_value(ssid, "ssid", "")),
@@ -317,8 +351,7 @@ class ParseNetxml(object):
                 ("snr_info", self.get_snr(node)),
                 ("gps_info", self.get_gpsinfo(node)),
 
-                # @todo
-                ("tag", []),
+                ("tag", self.get_tags(node)),
 
                 ("ip_address", self.get_ipaddress(node)),
                 ("bsstimestamp", self.get_xml_element_value(
@@ -374,8 +407,7 @@ class ParseNetxml(object):
 
                 ("seencards", self.get_seencards(node)),
 
-                #todo
-                ("tag", [])
+                ("tag", self.get_tags(node)),
             ))
 
     """Parse all networks"""
@@ -394,6 +426,3 @@ class ParseNetxml(object):
             network_json["wireless_client"] = clients
 
             yield network_json
-
-if __name__ == "main":
-    pass

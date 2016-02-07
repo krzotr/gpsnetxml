@@ -23,7 +23,21 @@
                     "WPA+AES-CCM"
                 ], 
                 "wpa_version": "WPA+WPA2", 
-                "dot11d": {}, 
+                "dot11d": {
+                    "country": "PL", 
+                    "range": [
+                        {
+                            "start": 1, 
+                            "end": 5, 
+                            "max_power": 20
+                        }, 
+                        {
+                            "start": 6, 
+                            "end": 13, 
+                            "max_power": 25
+                        }
+                    ]
+                }, 
                 "essid": "EssD", 
                 "cloaked": false, 
                 "info": "This is first SSID Info"
@@ -105,7 +119,10 @@
             "avg-lon": 12.46, 
             "avg-alt": 12.47
         }, 
-        "tag": [], 
+        "tag": {
+            "TagTest1": "TagTestValue1", 
+            "TagTest2": "TagTestValue2"
+        }, 
         "ip_address": {
             "ip_type": "UDP/TCP", 
             "ip_block": "10.10.110.1", 
@@ -143,7 +160,21 @@
                         "max_rate": 22.0, 
                         "packets": 8, 
                         "beaconrate": 109, 
-                        "dot11d": {}, 
+                        "dot11d": {
+                            "country": "RU", 
+                            "range": [
+                                {
+                                    "start": 2, 
+                                    "end": 6, 
+                                    "max_power": 15
+                                }, 
+                                {
+                                    "start": 7, 
+                                    "end": 12, 
+                                    "max_power": 20
+                                }
+                            ]
+                        }, 
                         "encryption": [
                             "WPA+TKIP", 
                             "WPA+AES-CCM"
@@ -239,7 +270,9 @@
                         "time": "Sat Nov 15 14:09:59 2014"
                     }
                 }, 
-                "tag": []
+                "tag": {
+                    "TagTest3": "TagTestValue3"
+                }
             }
         ]
     }
