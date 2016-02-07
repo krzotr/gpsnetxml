@@ -1,11 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <!-- Based on dumpfile_netxml.cc
-        Since: d1864de6ca1158b310231a831e96dc6348e86810
-     -->
+    <!--
+        /detection-run/wireless-network/wireless-client
+
+        Please do not use airodump for WARDriving!
+
+        airodump-ng.c, hardcoding
+
+        4134                    fprintf( G.f_kis_xml, "\t\t\t<SSID first-time=\"%s\" last-time=\"%s\">\n",
+        4135                                            first_time, last_time);
+        4136                    fprintf( G.f_kis_xml, "\t\t\t\t<type>Probe Request</type>\n"
+        4137                                            "\t\t\t\t<max-rate>54.000000</max-rate>\n"
+        4138                                            "\t\t\t\t<packets>1</packets>\n"
+        4139                                            "\t\t\t\t<encryption>None</encryption>\n");
+        ====
+        4156                    fprintf( G.f_kis_xml, "\t\t\t\t<type>Probe Request</type>\n"
+        4157                                            "\t\t\t\t<max-rate>54.000000</max-rate>\n"
+        4158                                            "\t\t\t\t<packets>1</packets>\n"
+        4159                                            "\t\t\t\t<encryption>None</encryption>\n");
+        4160                    fprintf( G.f_kis_xml, "\t\t\t</SSID>\n");
+        ====
+        4176            /* Those 2 lines always stays the same */
+        4177            fprintf(G.f_kis_xml, "\t\t\t<carrier>IEEE 802.11b+</carrier>\n");
+        4178            fprintf(G.f_kis_xml, "\t\t\t<encoding>CCK</encoding>\n");
+        ====
+        4181            fprintf(G.f_kis_xml, "\t\t\t<packets>\n"
+        4182                                    "\t\t\t\t<LLC>0</LLC>\n"
+        4183                                    "\t\t\t\t<data>0</data>\n"
+        4184                                    "\t\t\t\t<crypt>0</crypt>\n"
+        4185                                    "\t\t\t\t<total>%ld</total>\n"
+        4186                                    "\t\t\t\t<fragments>0</fragments>\n"
+        4187                                    "\t\t\t\t<retries>0</retries>\n"
+        4188                                    "\t\t\t</packets>\n",
+        4189                                    client->nb_pkt );
+        ====
+        ====
+        4195                            "\t\t\t\t<last_noise_dbm>0</last_noise_dbm>\n"
+        ====
+        4197                            "\t\t\t\t<last_noise_rssi>0</last_noise_rssi>\n"
+        ====
+        4199                            "\t\t\t\t<min_noise_dbm>0</min_noise_dbm>\n"
+        4200                            "\t\t\t\t<min_signal_rssi>1024</min_signal_rssi>\n"
+        4201                            "\t\t\t\t<min_noise_rssi>1024</min_noise_rssi>\n"
+        ====
+        4203                            "\t\t\t\t<max_noise_dbm>0</max_noise_dbm>\n"
+        ====
+        4205                            "\t\t\t\t<max_noise_rssi>0</max_noise_rssi>\n"
+    -->
+
+
+    <!-- Kismet version pattern -->
+    <xs:simpleType name="kismet-version">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="20[012]\d\.(\d+|11|12|GIT)\.R\d" />
+            <xs:pattern value="airodump-ng-1.+" />
+        </xs:restriction>
+    </xs:simpleType>
+
     <!--
         /detection-run/wireless-network/SSID/encryption
         /detection-run/wireless-network/network-client/SSID/encryption
+
+        aircrack-ng supports None, WEP, WPA+TKIP, WPA+PSK, WPA+AES-CCM, WPA+AES-OCB, WEP104, WEP40
     -->
     <xs:simpleType name="encryption">
         <xs:restriction base="xs:string">
@@ -27,6 +83,13 @@
             <xs:enumeration value="PPTP" />
             <xs:enumeration value="Fortress" />
             <xs:enumeration value="Keyguard" />
+            <!--
+                New encryption
+                airodump-ng.c
+                4310: if( ap_cur->security & AUTH_MGT   ) fprintf( G.f_kis_xml, NETXML_ENCRYPTION_TAG, "\t\t\t", "WPA+MGT" );
+                      // Not a valid value: NetXML does not have a value for WPA Enterprise
+            -->
+            <xs:enumeration value="WPA+MGT" />
         </xs:restriction>
     </xs:simpleType>
 
@@ -44,6 +107,17 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <!-- IP address pattern -->
+    <xs:simpleType name="ip">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!--
+        /detection-run/wireless-network/SSID/dot11d
+        /detection-run/wireless-network/wireless-client/SSID/dot11d
+    -->
     <xs:complexType name="dot11d">
         <xs:sequence>
                 <xs:element name="dot11d-range" maxOccurs="unbounded">
@@ -57,74 +131,83 @@
         <xs:attribute name="country" use="required" />
     </xs:complexType>
 
+    <!-- /detection-run/wireless-network/SSID/wps -->
+    <xs:simpleType name="wps">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Locked" />
+            <xs:enumeration value="Configured" />
+            <xs:enumeration value="Not Configured" />
+            <xs:enumeration value="No" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- /detection-run/wireless-network/SSID/wpa-version -->
+    <xs:simpleType name="wpa-version">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="WPA+WPA2" />
+            <xs:enumeration value="WPA" />
+            <xs:enumeration value="WPA2" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- /detection-run/wireless-network/SSID/essid -->
+    <xs:complexType name="essid">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="cloaked" type="xs:boolean" use="required" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <!-- /detection-run/wireless-network/SSID/type -->
+    <xs:simpleType name="ssid-type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Beacon" />
+            <xs:enumeration value="Probe Response" />
+            <xs:enumeration value="Cached SSID" />
+        </xs:restriction>
+    </xs:simpleType>
+
     <!-- /detection-run/wireless-network/SSID -->
     <xs:complexType name="ssid">
         <xs:sequence>
-            <xs:element name="type">
-                <xs:simpleType>
-                    <xs:restriction base="xs:string">
-                        <xs:enumeration value="Beacon" />
-                        <xs:enumeration value="Probe Response" />
-                        <xs:enumeration value="Cached SSID" />
-                    </xs:restriction>
-                </xs:simpleType>
-            </xs:element>
+            <xs:element name="type" type="ssid-type" />
             <xs:element name="max-rate" type="xs:decimal" />
             <xs:element name="packets" type="xs:nonNegativeInteger" />
             <xs:element name="beaconrate" type="xs:positiveInteger" minOccurs="0" />
+
             <!-- WPS since 2016.01.R1, backward compatibility so minOccurs="0" -->
-            <xs:element name="wps" minOccurs="0">
-                <xs:simpleType>
-                    <xs:restriction base="xs:string">
-                        <xs:enumeration value="Locked" />
-                        <xs:enumeration value="Configured" />
-                        <xs:enumeration value="Not Configured" />
-                        <xs:enumeration value="No" />
-                    </xs:restriction>
-                </xs:simpleType>
-            </xs:element>
+            <xs:element name="wps" type="wps" minOccurs="0" />
             <xs:element name="wps-manuf" type="xs:string" minOccurs="0" />
             <xs:element name="dev-name" type="xs:string" minOccurs="0" />
             <xs:element name="model-name" type="xs:string" minOccurs="0" />
             <xs:element name="model-num" type="xs:string" minOccurs="0" />
+
             <xs:element name="encryption" type="encryption" minOccurs="0" maxOccurs="unbounded" />
-            <xs:element name="wpa-version" minOccurs="0">
-                <xs:simpleType>
-                    <xs:restriction base="xs:string">
-                        <xs:enumeration value="WPA+WPA2" />
-                        <xs:enumeration value="WPA" />
-                        <xs:enumeration value="WPA2" />
-                    </xs:restriction>
-                </xs:simpleType>
-            </xs:element>
+            <!-- WPA-VERSION since 2016.01.R1 -->
+            <xs:element name="wpa-version" type="wpa-version" minOccurs="0" />
+
             <xs:element name="dot11d" type="dot11d" minOccurs="0" />
-            <xs:element name="essid" minOccurs="0">
-                <xs:complexType>
-                    <xs:simpleContent>
-                        <xs:extension base="xs:string">
-                            <xs:attribute name="cloaked" type="xs:boolean" use="required" />
-                        </xs:extension>
-                    </xs:simpleContent>
-                </xs:complexType>
-            </xs:element>
+            <xs:element name="essid" type="essid" minOccurs="0" />
             <xs:element name="info" type="xs:string" minOccurs="0" />
         </xs:sequence>
         <xs:attribute name="first-time" type="xs:string" use="required" />
         <xs:attribute name="last-time" type="xs:string" use="required" />
     </xs:complexType>
 
+    <!-- /detection-run/wireless-network/wireless-client/SSID/type -->
+    <xs:simpleType name="ssid-type-client">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Beacon" />
+            <xs:enumeration value="Probe Response" />
+            <xs:enumeration value="Probe Request" />
+        </xs:restriction>
+    </xs:simpleType>
+
     <!-- /detection-run/wireless-network/wireless-client/SSID -->
     <xs:complexType name="ssid-client">
         <xs:sequence>
-            <xs:element name="type">
-                <xs:simpleType>
-                    <xs:restriction base="xs:string">
-                        <xs:enumeration value="Beacon" />
-                        <xs:enumeration value="Probe Response" />
-                        <xs:enumeration value="Probe Request" />
-                    </xs:restriction>
-                </xs:simpleType>
-            </xs:element>
+            <xs:element name="type" type="ssid-type-client" />
             <xs:element name="max-rate" type="xs:decimal" />
             <xs:element name="packets" type="xs:nonNegativeInteger" />
             <xs:element name="beaconrate" type="xs:positiveInteger" minOccurs="0" />
@@ -189,7 +272,10 @@
         </xs:union>
     </xs:simpleType>
 
-    <!-- /detection-run/wireless-network/packets -->
+    <!--
+        /detection-run/wireless-network/packets
+        /detection-run/wireless-network/wireless-client/packets
+    -->
     <xs:complexType name="packets">
         <xs:sequence>
             <xs:element name="LLC" type="xs:nonNegativeInteger" />
@@ -201,7 +287,10 @@
         </xs:sequence>
     </xs:complexType>
 
-    <!-- /detection-run/wireless-network/snr-info -->
+    <!--
+        /detection-run/wireless-network/snr-info
+        /detection-run/wireless-network/wireless-client/snr-info
+    -->
     <xs:complexType name="snr-info">
         <xs:sequence>
             <xs:element name="last_signal_dbm" type="xs:int" />
@@ -219,7 +308,10 @@
         </xs:sequence>
     </xs:complexType>
 
-    <!-- /detection-run/wireless-network/gps-info -->
+    <!--
+        /detection-run/wireless-network/gps-info
+        /detection-run/wireless-network/wireless-client/gps-info
+    -->
     <xs:complexType name="gps-info">
         <xs:sequence>
             <xs:element name="min-lat" type="xs:decimal" />
@@ -239,12 +331,15 @@
         </xs:sequence>
     </xs:complexType>
 
-    <!-- /detection-run/wireless-network/ip-address -->
+    <!--
+        /detection-run/wireless-network/ip-address
+        /detection-run/wireless-network/wireless-client/ip-address
+    -->
     <xs:complexType name="ip-address">
         <xs:sequence>
-            <xs:element name="ip-block" type="xs:string" />
-            <xs:element name="ip-netmask" type="xs:string" />
-            <xs:element name="ip-gateway" type="xs:string" />
+            <xs:element name="ip-block" type="ip" />
+            <xs:element name="ip-netmask" type="ip" />
+            <xs:element name="ip-gateway" type="ip" />
         </xs:sequence>
         <xs:attribute name="type" use="required">
             <xs:simpleType>
@@ -258,7 +353,10 @@
         </xs:attribute>
     </xs:complexType>
 
-    <!-- /detection-run/wireless-network/seen-card -->
+    <!--
+        /detection-run/wireless-network/seen-card
+        /detection-run/wireless-network/wireless-client/seen-card
+    -->
     <xs:complexType name="seen-card">
         <xs:sequence>
             <xs:element name="seen-uuid" type="uuid" />
@@ -267,7 +365,10 @@
         </xs:sequence>
     </xs:complexType>
 
-    <!-- /detection-run/wireless-network/seen-card -->
+    <!--
+        /detection-run/wireless-network/tag
+        /detection-run/wireless-network/wireless-client/tag
+    -->
     <xs:complexType name="tag">
         <xs:simpleContent>
             <xs:extension base="xs:string">
@@ -276,25 +377,58 @@
         </xs:simpleContent>
     </xs:complexType>
 
+    <!--
+        /detection-run/wireless-network/@type
+
+        aircrack-ng supports only probe
+    -->
+    <xs:simpleType name="type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="infrastructure" />
+            <xs:enumeration value="ad-hoc" />
+            <xs:enumeration value="probe" />
+            <xs:enumeration value="data" />
+            <xs:enumeration value="turbocell" />
+            <xs:enumeration value="unknown" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- /detection-run/wireless-network/wireless-client/@type -->
+    <xs:simpleType name="type-client">
+        <!-- airodump-ng supports tods and established -->
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="fromds" />
+            <xs:enumeration value="tods" />
+            <xs:enumeration value="interds" />
+            <xs:enumeration value="established" />
+            <xs:enumeration value="ad-hoc" />
+            <xs:enumeration value="unknown" />
+        </xs:restriction>
+    </xs:simpleType>
+
     <!-- /detection-run -->
     <xs:element name="detection-run">
         <xs:complexType>
             <xs:sequence>
-                <!-- /detection-run/card-source -->
-                <xs:element name="card-source" maxOccurs="unbounded">
+                <!--
+                    /detection-run/card-source
+                    card-source minOccurs=0 for aircrack-ng
+                -->
+                <xs:element name="card-source" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
                             <xs:element name="card-source" type="xs:string" />
                             <xs:element name="card-name" type="xs:string" />
                             <xs:element name="card-interface" type="xs:string" />
                             <xs:element name="card-type" type="xs:string" />
-                            <xs:element name="card-packets" type="xs:int" />
+                            <xs:element name="card-packets" type="xs:nonNegativeInteger" />
                             <xs:element name="card-hop" type="xs:boolean" />
                             <xs:element name="card-channels" type="xs:string" />
                         </xs:sequence>
                         <xs:attribute name="uuid" type="uuid" use="required" />
                     </xs:complexType>
                 </xs:element>
+
                 <!-- /detection-run/wireless-network -->
                 <xs:element name="wireless-network" maxOccurs="unbounded">
                     <xs:complexType>
@@ -302,23 +436,39 @@
                             <xs:element name="SSID" type="ssid" minOccurs="0" maxOccurs="unbounded" />
                             <xs:element name="BSSID" type="mac" />
                             <xs:element name="manuf" type="xs:string" />
-                            <xs:element name="channel" type="xs:int" />
+                            <xs:element name="channel" type="xs:nonNegativeInteger" />
                             <xs:element name="freqmhz" type="freqmhz" minOccurs="0" maxOccurs="unbounded" />
-                            <xs:element name="maxseenrate" type="xs:int" />
+                            <!--
+                                decimal maxseenrate for aircrack-ng
+
+                                4353: /* XXX: What about 5.5Mbit */
+                            -->
+                            <xs:element name="maxseenrate" type="xs:decimal" />
+                            <!-- airodump-ng, carrier always IEEE 802.11b+ -->
                             <xs:element name="carrier" type="carrier" minOccurs="0" maxOccurs="unbounded" />
+                            <!-- airodump-ng, encoding always CCK -->
                             <xs:element name="encoding" type="encoding" minOccurs="0" maxOccurs="unbounded" />
                             <xs:element name="packets" type="packets" />
+                            <!--
+                                aircrack-ng - datasize always 0
+
+                                airodump.c
+                                4528: /* XXX: What does that field mean? Is it the total size of data? */
+                                4529: fprintf(G.f_kis_xml, "\t\t<datasize>0</datasize>\n");
+                            -->
                             <xs:element name="datasize" type="xs:nonNegativeInteger" />
                             <xs:element name="snr-info" type="snr-info" minOccurs="0" />
                             <xs:element name="gps-info" type="gps-info" minOccurs="0" />
                             <xs:element name="tag" type="tag" minOccurs="0" maxOccurs="unbounded" />
                             <xs:element name="ip-address" type="ip-address" minOccurs="0" />
                             <xs:element name="bsstimestamp" type="xs:nonNegativeInteger" />
-                            <xs:element name="cdp-device" type="xs:string" />
-                            <xs:element name="cdp-portid" type="xs:string" />
+                            <!-- @todo, minOccurs=0 for cdp-device, cdp-portid since 2016.0X.0X -->
+                            <xs:element name="cdp-device" type="xs:string" minOccurs="0" />
+                            <xs:element name="cdp-portid" type="xs:string" minOccurs="0" />
                             <xs:element name="dhcp-hostname" type="xs:string" minOccurs="0" />
                             <xs:element name="dhcp-vendor" type="xs:string" minOccurs="0" />
-                            <xs:element name="seen-card" type="seen-card" maxOccurs="unbounded" />
+                            <!-- minOccurs=0 seen-card for aircrack-ng -->
+                            <xs:element name="seen-card" type="seen-card" minOccurs="0" maxOccurs="unbounded" />
                             <!-- /detection-run/wireless-network/wireless-client -->
                             <xs:element name="wireless-client" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
@@ -326,13 +476,21 @@
                                         <xs:element name="client-mac" type="mac" />
                                         <xs:element name="client-manuf" type="xs:string" />
                                         <xs:element name="SSID" type="ssid-client" minOccurs="0" maxOccurs="unbounded" />
-                                        <xs:element name="channel" type="xs:int" />
+                                        <xs:element name="channel" type="xs:nonNegativeInteger" />
                                         <xs:element name="freqmhz" type="freqmhz" minOccurs="0" maxOccurs="unbounded" />
-                                        <xs:element name="maxseenrate" type="xs:int" />
+                                        <!--
+                                            decimal maxseenrate for aircrack-ng
+
+                                            4353: /* XXX: What about 5.5Mbit */
+                                        -->
+                                        <xs:element name="maxseenrate" type="xs:decimal" />
+                                        <!-- airodump-ng, carrier always IEEE 802.11b+ -->
                                         <xs:element name="carrier" type="carrier-client" minOccurs="0" maxOccurs="6" />
+                                        <!-- airodump-ng, encoding always CCK -->
                                         <xs:element name="encoding" type="encoding-client" minOccurs="0" maxOccurs="3" />
                                         <xs:element name="packets" type="packets" />
-                                        <xs:element name="datasize" type="xs:nonNegativeInteger" />
+                                        <!-- minOccurs=0 datasize for aircrack-ng-->
+                                        <xs:element name="datasize" type="xs:nonNegativeInteger" default="0" minOccurs="0" />
                                         <xs:element name="snr-info" type="snr-info" minOccurs="0" />
                                         <xs:element name="gps-info" type="gps-info" minOccurs="0" />
                                         <xs:element name="ip-address" type="ip-address" minOccurs="0" />
@@ -340,46 +498,25 @@
                                         <xs:element name="cdp-portid" type="xs:string" minOccurs="0" />
                                         <xs:element name="dhcp-hostname" type="xs:string" minOccurs="0" />
                                         <xs:element name="dhcp-vendor" type="xs:string" minOccurs="0" />
-                                        <xs:element name="seen-card" type="seen-card" maxOccurs="unbounded" />
+                                        <!-- minOccurs=0 seen-card for aircrack-ng -->
+                                        <xs:element name="seen-card" type="seen-card" minOccurs="0" maxOccurs="unbounded" />
                                         <xs:element name="tag" type="tag" minOccurs="0" maxOccurs="unbounded" />
                                     </xs:sequence>
                                     <xs:attribute name="number" type="xs:positiveInteger" use="required" />
-                                    <xs:attribute name="type" use="required">
-                                        <xs:simpleType>
-                                            <xs:restriction base="xs:string">
-                                                <xs:enumeration value="fromds" />
-                                                <xs:enumeration value="tods" />
-                                                <xs:enumeration value="interds" />
-                                                <xs:enumeration value="established" />
-                                                <xs:enumeration value="ad-hoc" />
-                                                <xs:enumeration value="unknown" />
-                                            </xs:restriction>
-                                        </xs:simpleType>
-                                    </xs:attribute>
+                                    <xs:attribute name="type" type="type-client" use="required" />
                                     <xs:attribute name="first-time" type="xs:string" use="required" />
                                     <xs:attribute name="last-time" type="xs:string" use="required" />
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
                         <xs:attribute name="number" type="xs:positiveInteger" use="required" />
-                        <xs:attribute name="type" use="required">
-                            <xs:simpleType>
-                                <xs:restriction base="xs:string">
-                                    <xs:enumeration value="infrastructure" />
-                                    <xs:enumeration value="ad-hoc" />
-                                    <xs:enumeration value="probe" />
-                                    <xs:enumeration value="data" />
-                                    <xs:enumeration value="turbocell" />
-                                    <xs:enumeration value="unknown" />
-                                </xs:restriction>
-                            </xs:simpleType>
-                        </xs:attribute>
+                        <xs:attribute name="type" type="type" use="required" />
                         <xs:attribute name="first-time" type="xs:string" use="required" />
                         <xs:attribute name="last-time" type="xs:string" use="required" />
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>
-            <xs:attribute name="kismet-version" type="xs:string" />
+            <xs:attribute name="kismet-version" type="kismet-version" />
             <xs:attribute name="start-time" type="xs:string" />
         </xs:complexType>
     </xs:element>
