@@ -104,20 +104,20 @@
             "max_noise_rssi": 12
         }, 
         "gps_info": {
-            "min-lat": 12.34, 
-            "min-lon": 12.35, 
-            "min-alt": 12.36, 
-            "min-spd": 12.37, 
-            "max-lat": 12.38, 
-            "max-lon": 12.39, 
-            "max-alt": 12.4, 
-            "max-spd": 12.41, 
-            "peak-lat": 12.42, 
-            "peak-lon": 12.43, 
-            "peak-alt": 12.44, 
-            "avg-lat": 12.45, 
-            "avg-lon": 12.46, 
-            "avg-alt": 12.47
+            "min_lat": 12.34, 
+            "min_lon": 12.35, 
+            "min_alt": 12.36, 
+            "min_spd": 12.37, 
+            "max_lat": 12.38, 
+            "max_lon": 12.39, 
+            "max_alt": 12.4, 
+            "max_spd": 12.41, 
+            "peak_lat": 12.42, 
+            "peak_lon": 12.43, 
+            "peak_alt": 12.44, 
+            "avg_lat": 12.45, 
+            "avg_lon": 12.46, 
+            "avg_alt": 12.47
         }, 
         "tag": {
             "TagTest1": "TagTestValue1", 
@@ -134,7 +134,7 @@
         "cdp_portid": "CDP-PORTID", 
         "dhcp_hostname": "DHCP-host-net", 
         "dhcp_vendor": "DHCP-vendor-net", 
-        "seen-cards": {
+        "seen_cards": {
             "xxxxxxxx-yyyy-zzzz-aaaa-bbbbbbbbbbbb": {
                 "packets": 178, 
                 "time": "Sat Nov 15 14:09:57 2014"
@@ -235,20 +235,20 @@
                     "max_noise_rssi": 92
                 }, 
                 "gps_info": {
-                    "min-lat": 112.34, 
-                    "min-lon": 112.35, 
-                    "min-alt": 112.36, 
-                    "min-spd": 112.37, 
-                    "max-lat": 112.38, 
-                    "max-lon": 112.39, 
-                    "max-alt": 112.4, 
-                    "max-spd": 112.41, 
-                    "peak-lat": 112.42, 
-                    "peak-lon": 112.43, 
-                    "peak-alt": 112.44, 
-                    "avg-lat": 112.45, 
-                    "avg-lon": 112.46, 
-                    "avg-alt": 112.47
+                    "min_lat": 112.34, 
+                    "min_lon": 112.35, 
+                    "min_alt": 112.36, 
+                    "min_spd": 112.37, 
+                    "max_lat": 112.38, 
+                    "max_lon": 112.39, 
+                    "max_alt": 112.4, 
+                    "max_spd": 112.41, 
+                    "peak_lat": 112.42, 
+                    "peak_lon": 112.43, 
+                    "peak_alt": 112.44, 
+                    "avg_lat": 112.45, 
+                    "avg_lon": 112.46, 
+                    "avg_alt": 112.47
                 }, 
                 "ip_address": {
                     "ip_type": "UDP/TCP", 
@@ -260,7 +260,7 @@
                 "cdp_portid": "CDP-PORTID-CLIENT", 
                 "dhcp_hostname": "DHCP-host-client", 
                 "dhcp_vendor": "DHCP-vendor-client", 
-                "seencards": {
+                "seen_cards": {
                     "xxxxxxxx-yyyy-zzzz-aaaa-bbbbbbbbbbbb": {
                         "packets": 178, 
                         "time": "Sat Nov 15 14:09:57 2014"

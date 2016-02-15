@@ -8,15 +8,22 @@ from collections import OrderedDict
 
 
 class ParseGpsxml(object):
+    GPS_POINTS_NETWORKS = 1
+    GPS_POINTS_TRACKS = 2
+    GPS_POINTS_ZEROS = 4
+    GPS_POINTS_ALL = 7
+
     """Based on dumpfile_gpsxml.cc"""
-
-    def __init__(self, file, skip_gps_track=False, skip_all=False):
+    def __init__(self, file, gps_points=None):
         self._file = file
-        self._skip_gps_track = skip_gps_track
-        self._skip_all = skip_all
 
-        if self._skip_all:
-            self._skip_gps_track = True
+        if gps_points is None:
+            gps_points = ParseGpsxml.GPS_POINTS_ALL
+
+        if gps_points < 1 or gps_points > ParseGpsxml.GPS_POINTS_ALL:
+            raise Exception("Ïnvalid gps_points parameter")
+
+        self._gps_points = gps_points
 
     def get_points(self):
         for event, el in et.iterparse(self._file, events=("start", "end")):
@@ -28,13 +35,22 @@ class ParseGpsxml(object):
 
             attr = el.attrib
 
-            if attr["bssid"] == "GP:SD:TR:AC:KL:OG" and self._skip_gps_track:
+            if (attr["bssid"] == "GP:SD:TR:AC:KL:OG"
+                and not (self._gps_points & ParseGpsxml.GPS_POINTS_TRACKS)):
                 continue
 
-            if self._skip_all and attr["bssid"] == "00:00:00:00:00:00" \
-                    and attr["source"] == "00:00:00:00:00:00":
+            if (attr["bssid"] == "00:00:00:00:00:00"
+                and attr["source"] == "00:00:00:00:00:00"
+                and not (self._gps_points & ParseGpsxml.GPS_POINTS_ZEROS)):
                 continue
 
+            if (attr["bssid"] != "GP:SD:TR:AC:KL:OG"
+                and attr["bssid"] != "00:00:00:00:00:00"
+                and attr["source"] != "00:00:00:00:00:00"
+                and not (self._gps_points & ParseGpsxml.GPS_POINTS_NETWORKS)):
+                continue
+
+            # Common for all gps_points types
             out = OrderedDict([
                 ("bssid", attr["bssid"])
             ])
@@ -44,6 +60,7 @@ class ParseGpsxml(object):
                     ("source", attr.get("source"))
                 ]))
 
+            # Common for all gps_point types
             out.update(OrderedDict((
                 ("time_sec", int(attr.get("time-sec", 0))),
                 ("time_usec", int(attr.get("time-usec", 0))),
@@ -166,7 +183,7 @@ class ParseNetxml(object):
         out = OrderedDict()
 
         for el in elements:
-            out[el.lower()] = self.get_xml_element_value(
+            out[el.lower().replace("-", "_")] = self.get_xml_element_value(
                 node, element + "/" + el, default)
 
         return out
@@ -364,7 +381,7 @@ class ParseNetxml(object):
                 ("dhcp_vendor", self.get_xml_element_value(
                     node, "dhcp-vendor")),
 
-                ("seen-cards", self.get_seencards(node)),
+                ("seen_cards", self.get_seencards(node)),
             ))
         # wireless-client
         else:
@@ -405,7 +422,7 @@ class ParseNetxml(object):
                 ("dhcp_vendor", self.get_xml_element_value(
                     node, "dhcp-vendor")),
 
-                ("seencards", self.get_seencards(node)),
+                ("seen_cards", self.get_seencards(node)),
 
                 ("tag", self.get_tags(node)),
             ))

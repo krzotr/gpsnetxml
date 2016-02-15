@@ -29,54 +29,34 @@ class GpsnetxmlTest(unittest.TestCase):
 
 
 class TestParseGpsxml(unittest.TestCase):
-    def test_get_all_points(self):
-        net = ParseGpsxml("asset/gpspoint.gpsxml")
+    def test_get_points(self):
 
-        data = []
+        gps_points = {
+            "gpspoint": ParseGpsxml.GPS_POINTS_ALL,
+            "gpspoint_tracks": ParseGpsxml.GPS_POINTS_TRACKS,
+            "gpspoint_zeros": ParseGpsxml.GPS_POINTS_ZEROS,
+            "gpspoint_networks": ParseGpsxml.GPS_POINTS_NETWORKS
+        }
 
-        for i in net.get_points():
-            data.append(i)
+        for filename, gps_point in gps_points.iteritems():
+            gps = ParseGpsxml("asset/gpspoint.gpsxml", gps_point)
 
-        expected = ""
-        with open("asset/gpspoint.gpsxml.json") as f:
-            expected = f.read()
+            data = []
 
-        self.assertMultiLineEqual(
-            expected, json.dumps(data, indent=4)
-        )
+            for i in gps.get_points():
+                data.append(i)
 
-    def test_get_points_without_track(self):
-        net = ParseGpsxml("asset/gpspoint.gpsxml", skip_gps_track=True)
+            expected = ""
+            with open("asset/" + filename + ".gpsxml.json") as f:
+                expected = f.read()
 
-        data = []
+            self.assertMultiLineEqual(
+                expected, json.dumps(data, indent=4),
+                "Error: testing " + filename
+            )
 
-        for i in net.get_points():
-            data.append(i)
-
-        expected = ""
-        with open("asset/gpspoint_without_track.gpsxml.json") as f:
-            expected = f.read()
-
-        self.assertMultiLineEqual(
-            expected, json.dumps(data, indent=4)
-        )
-
-    def test_get_points_skip_all(self):
-        net = ParseGpsxml("asset/gpspoint.gpsxml", skip_gps_track=True,
-                          skip_all=True)
-
-        data = []
-
-        for i in net.get_points():
-            data.append(i)
-
-        expected = ""
-        with open("asset/gpspoint_skip_all.json") as f:
-            expected = f.read()
-
-        self.assertMultiLineEqual(
-            expected, json.dumps(data, indent=4)
-        )
+    def test_get_points_invalid_parameter(self):
+        self.assertRaises(Exception, ParseGpsxml, "asset/gpspoint.gpsxml", 0)
 
 
 if __name__ == '__main__':
