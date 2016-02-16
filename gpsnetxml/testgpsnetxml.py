@@ -3,16 +3,21 @@
 
 import unittest
 import json
+import os
 
 from gpsnetxml import ParseGpsxml
 from gpsnetxml import ParseNetxml
+
+
+def get_asset_dic():
+    return os.path.dirname(os.path.realpath(__file__)) + "/asset"
 
 
 class GpsnetxmlTest(unittest.TestCase):
     def test_get_networks(self):
         self.maxDiff = None
 
-        net = ParseNetxml("asset/network.netxml")
+        net = ParseNetxml(get_asset_dic() + "/network.netxml")
 
         data = []
 
@@ -20,7 +25,7 @@ class GpsnetxmlTest(unittest.TestCase):
             data.append(i)
 
         expected = ""
-        with open("asset/network.netxml.json") as f:
+        with open(get_asset_dic() + "/network.netxml.json") as f:
             expected = f.read()
 
         self.assertMultiLineEqual(
@@ -39,7 +44,7 @@ class TestParseGpsxml(unittest.TestCase):
         }
 
         for filename, gps_point in gps_points.iteritems():
-            gps = ParseGpsxml("asset/gpspoint.gpsxml", gps_point)
+            gps = ParseGpsxml(get_asset_dic() + "/gpspoint.gpsxml", gps_point)
 
             data = []
 
@@ -47,7 +52,7 @@ class TestParseGpsxml(unittest.TestCase):
                 data.append(i)
 
             expected = ""
-            with open("asset/" + filename + ".gpsxml.json") as f:
+            with open(get_asset_dic() + "/" + filename + ".gpsxml.json") as f:
                 expected = f.read()
 
             self.assertMultiLineEqual(
@@ -55,7 +60,8 @@ class TestParseGpsxml(unittest.TestCase):
             )
 
     def test_get_points_invalid_parameter(self):
-        self.assertRaises(Exception, ParseGpsxml, "asset/gpspoint.gpsxml", 0)
+        self.assertRaises(Exception, ParseGpsxml,
+                          get_asset_dic() + "/gpspoint.gpsxml", 0)
 
 
 if __name__ == '__main__':
