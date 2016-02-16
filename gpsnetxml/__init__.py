@@ -464,6 +464,6 @@ class ParseNetxml(object):
 
                 clients.append(client_json)
 
-            network_json["wireless_client"] = clients
+            network_json["wireless_clients"] = clients
 
             yield network_json
