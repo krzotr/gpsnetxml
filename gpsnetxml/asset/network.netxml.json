@@ -2,12 +2,12 @@
     {
         "number": 1, 
         "type": "infrastructure", 
-        "first_time": "Sat Nov 15 14:00:00 2014", 
-        "last_time": "Sat Nov 15 14:59:59 2014", 
+        "first_time": "2014-11-15 14:00:00", 
+        "last_time": "2014-11-15 14:59:59", 
         "ssids": [
             {
-                "first_time": "Sat Nov 15 14:10:00 2014", 
-                "last_time": "Sat Nov 15 14:10:59 2014", 
+                "first_time": "2014-11-15 14:10:00", 
+                "last_time": "2014-11-15 14:10:59", 
                 "type": "Beacon", 
                 "max_rate": 54.0, 
                 "packets": 954, 
@@ -43,8 +43,8 @@
                 "info": "This is first SSID Info"
             }, 
             {
-                "first_time": "Sat Nov 15 14:20:00 2014", 
-                "last_time": "Sat Nov 15 14:20:59 2014", 
+                "first_time": "2014-11-15 14:20:00", 
+                "last_time": "2014-11-15 14:20:59", 
                 "type": "Probe Response", 
                 "max_rate": 53.0, 
                 "packets": 999, 
@@ -137,25 +137,25 @@
         "seen_cards": {
             "xxxxxxxx-yyyy-zzzz-aaaa-bbbbbbbbbbbb": {
                 "packets": 178, 
-                "time": "Sat Nov 15 14:09:57 2014"
+                "time": "2014-11-15 14:09:57"
             }, 
             "mmmmmmmm-yyyy-zzzz-aaaa-bbbbbbbbbbbb": {
                 "packets": 178, 
-                "time": "Sat Nov 15 14:11:59 2014"
+                "time": "2014-11-15 14:11:59"
             }
         }, 
         "wireless_client": [
             {
                 "number": 1, 
                 "type": "fromds", 
-                "first_time": "Sat Nov 15 14:20:00 2014", 
-                "last_time": "Sat Nov 15 14:20:59 2014", 
+                "first_time": "2014-11-15 14:20:00", 
+                "last_time": "2014-11-15 14:20:59", 
                 "client_mac": "22:33:44:55:66:77", 
                 "client_manuf": "D-LinkIn", 
                 "ssids": [
                     {
-                        "first_time": "Sat Nov 15 14:30:00 2014", 
-                        "last_time": "Sat Nov 15 14:30:59 2014", 
+                        "first_time": "2014-11-15 14:30:00", 
+                        "last_time": "2014-11-15 14:30:59", 
                         "type": "Probe Response", 
                         "max_rate": 22.0, 
                         "packets": 8, 
@@ -183,8 +183,8 @@
                         "info": "Client SSiD info"
                     }, 
                     {
-                        "first_time": "Sat Nov 15 14:40:00 2014", 
-                        "last_time": "Sat Nov 15 14:40:59 2014", 
+                        "first_time": "2014-11-15 14:40:00", 
+                        "last_time": "2014-11-15 14:40:59", 
                         "type": "Probe Request", 
                         "max_rate": 21.0, 
                         "packets": 12, 
@@ -263,11 +263,11 @@
                 "seen_cards": {
                     "xxxxxxxx-yyyy-zzzz-aaaa-bbbbbbbbbbbb": {
                         "packets": 178, 
-                        "time": "Sat Nov 15 14:09:57 2014"
+                        "time": "2014-11-15 14:09:57"
                     }, 
                     "mmmmmmmm-yyyy-zzzz-aaaa-bbbbbbbbbbbb": {
                         "packets": 178, 
-                        "time": "Sat Nov 15 14:09:59 2014"
+                        "time": "2014-11-15 14:09:59"
                     }
                 }, 
                 "tag": {

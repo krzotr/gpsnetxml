@@ -51,8 +51,7 @@ class TestParseGpsxml(unittest.TestCase):
                 expected = f.read()
 
             self.assertMultiLineEqual(
-                expected, json.dumps(data, indent=4),
-                "Error: testing " + filename
+                expected, json.dumps(data, indent=4)
             )
 
     def test_get_points_invalid_parameter(self):

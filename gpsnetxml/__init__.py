@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import time
 import xml.etree.ElementTree as et
 
 from collections import OrderedDict
@@ -76,10 +77,10 @@ class ParseGpsxml(object):
 
             if attr["bssid"] != "GP:SD:TR:AC:KL:OG":
                 out.update(OrderedDict((
-                    ("signal_rssi", attr.get("signal_rssi", 0)),
-                    ("noise_rssi", attr.get("noise_rssi", 0)),
-                    ("signal_dbm", attr.get("signal_dbm", 0)),
-                    ("noise_dbm", attr.get("noise_dbm", 0))
+                    ("signal_rssi", int(attr.get("signal_rssi", 0))),
+                    ("noise_rssi", int(attr.get("noise_rssi", 0))),
+                    ("signal_dbm", int(attr.get("signal_dbm", 0))),
+                    ("noise_dbm", int(attr.get("noise_dbm", 0)))
                 )))
 
             yield out
@@ -102,9 +103,15 @@ class ParseNetxml(object):
 
     packets_elements = ("LLC", "data", "crypt", "total", "fragments", "retries")
 
-    def __init__(self, file):
+    def __init__(self, file, date_format="%Y-%m-%d %H:%M:%S"):
         self._file = file
         self._netxml = et.parse(self._file)
+        self._date_format = date_format
+
+    def get_datetime(self, dt):
+        date_time = time.strptime(dt, "%a %b %d %H:%M:%S %Y")
+
+        return time.strftime(self._date_format, date_time)
 
     """Typecast to type of first parameter"""
     def ret_val(self, default, val):
@@ -247,7 +254,8 @@ class ParseNetxml(object):
                     continue
 
                 seencards[uuid] = {
-                    "time": self.get_xml_element_value(card, "seen-time", ""),
+                    "time": self.get_datetime(
+                        self.get_xml_element_value(card, "seen-time", "")),
                     "packets": self.get_xml_element_value(card,
                                                           "seen-packets", 0)
                 }
@@ -276,8 +284,10 @@ class ParseNetxml(object):
         try:
             for ssid in node.findall("SSID"):
                 ssids.append(OrderedDict((
-                    ("first_time", self.get_xml_attrib(ssid, "first-time")),
-                    ("last_time", self.get_xml_attrib(ssid, "last-time")),
+                    ("first_time", self.get_datetime(
+                        self.get_xml_attrib(ssid, "first-time"))),
+                    ("last_time", self.get_datetime(
+                        self.get_xml_attrib(ssid, "last-time"))),
                     ("type", self.get_xml_element_value(ssid, "type")),
                     ("max_rate", self.get_xml_element_value(
                         ssid, "max-rate", .0)),
@@ -320,8 +330,10 @@ class ParseNetxml(object):
         try:
             for ssid in node.findall("SSID"):
                 ssids.append(OrderedDict((
-                    ("first_time", self.get_xml_attrib(ssid, "first-time", "")),
-                    ("last_time", self.get_xml_attrib(ssid, "last-time", "")),
+                    ("first_time", self.get_datetime(
+                        self.get_xml_attrib(ssid, "first-time", ""))),
+                    ("last_time", self.get_datetime(
+                        self.get_xml_attrib(ssid, "last-time", ""))),
                     ("type", self.get_xml_element_value(ssid, "type", "")),
                     ("max_rate", self.get_xml_element_value(
                         ssid, "max-rate", .0)),
@@ -341,6 +353,15 @@ class ParseNetxml(object):
 
         return ssids
 
+    """Fix for Bsstimestamp unsigned int 64"""
+    def get_bsstimestamp(self, node):
+        bss = self.get_xml_element_value(node, "bsstimestamp", 0)
+
+        if bss > 9223372036854775807 or bss < -9223372036854775808:
+            return 0
+
+        return bss
+
     """Parse wireless-network or wireless-client"""
     def get_network(self, node, is_client=False):
         # Parse wireless-network
@@ -348,8 +369,10 @@ class ParseNetxml(object):
             return OrderedDict((
                 ("number", self.get_xml_attrib(node, "number", 0)),
                 ("type", self.get_xml_attrib(node, "type", "unknown")),
-                ("first_time", self.get_xml_attrib(node, "first-time")),
-                ("last_time", self.get_xml_attrib(node, "last-time")),
+                ("first_time", self.get_datetime(
+                    self.get_xml_attrib(node, "first-time"))),
+                ("last_time", self.get_datetime(
+                    self.get_xml_attrib(node, "last-time"))),
                 ("ssids", self.get_network_ssids(node)),
 
                 ("bssid", self.get_xml_element_value(node, "BSSID")),
@@ -371,8 +394,7 @@ class ParseNetxml(object):
                 ("tag", self.get_tags(node)),
 
                 ("ip_address", self.get_ipaddress(node)),
-                ("bsstimestamp", self.get_xml_element_value(
-                    node, "bsstimestamp", 0)),
+                ("bsstimestamp", self.get_bsstimestamp(node)),
                 ("cdp_device", self.get_xml_element_value(node, "cdp-device")),
                 ("cdp_portid", self.get_xml_element_value(node, "cdp-portid")),
 
@@ -388,8 +410,10 @@ class ParseNetxml(object):
             return OrderedDict((
                 ("number", self.get_xml_attrib(node, "number", 0)),
                 ("type", self.get_xml_attrib(node, "type", "unknown")),
-                ("first_time", self.get_xml_attrib(node, "first-time")),
-                ("last_time", self.get_xml_attrib(node, "last-time")),
+                ("first_time", self.get_datetime(
+                    self.get_xml_attrib(node, "first-time"))),
+                ("last_time", self.get_datetime(
+                    self.get_xml_attrib(node, "last-time"))),
                 ("client_mac", self.get_xml_element_value(
                     node, "client-mac")),
                 ("client_manuf", self.get_xml_element_value(
