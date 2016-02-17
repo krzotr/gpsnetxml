@@ -7,6 +7,8 @@ import xml.etree.ElementTree as et
 
 from collections import OrderedDict
 
+__version__ = "1.0.0"
+
 
 class DateConv(object):
     """
@@ -32,7 +34,7 @@ class DateConv(object):
 
 class ParseGpsxml(object):
     """
-    Convert gos.xml file to json format. Based on dumpfile_gpsxml.cc
+    Convert .gpsxml file to json format. Based on dumpfile_gpsxml.cc
     """
 
     GPS_POINTS_NETWORKS = 1
@@ -78,6 +80,10 @@ class ParseGpsxml(object):
             return {}
 
     def get_points(self):
+        """
+        Generator, return dictionary of gps point
+        """
+
         for event, el in et.iterparse(self._file, events=("start", "end")):
             if el.tag != "gps-point":
                 continue
@@ -139,7 +145,7 @@ class ParseGpsxml(object):
 
 class ParseNetxml(object):
     """
-    Convert gos.xml file to json format. Based on dumpfile_netxml.cc
+    Convert .netxml file to json format. Based on dumpfile_netxml.cc
     """
 
     gps_info_elements = ("min-lat", "min-lon", "min-alt", "min-spd",
@@ -178,8 +184,11 @@ class ParseNetxml(object):
         except:
             return {}
 
-    """Typecast to type of first parameter"""
-    def ret_val(self, default, val):
+    def _ret_val(self, default, val):
+        """
+        Typecast to type of first parameter
+        """
+
         tp = type(default)
 
         if tp == int:
@@ -193,17 +202,23 @@ class ParseNetxml(object):
 
         return str(val)
 
-    """Get attribute value from specified attribute name"""
-    def get_xml_attrib(self, xml_element, attrib_name, default=""):
+    def _get_xml_attrib(self, xml_element, attrib_name, default=""):
+        """
+        Get attribute value from specified attribute name
+        """
+
         try:
             val = xml_element.attrib.get(attrib_name, default)
 
-            return self.ret_val(default, val)
+            return self._ret_val(default, val)
         except:
             return default
 
-    """Get element value from specified node"""
-    def get_xml_element_value(self, xml_element, element_name, default=""):
+    def _get_xml_element_value(self, xml_element, element_name, default=""):
+        """
+        Get element value from specified node
+        """
+
         try:
             if "/" in element_name:
                 index = element_name.index("/")
@@ -214,53 +229,67 @@ class ParseNetxml(object):
             else:
                 val = xml_element.findall(element_name)[0].text
 
-            return self.ret_val(default, val)
+            return self._ret_val(default, val)
         except:
             return default
 
-    """Get element values from specified node"""
-    def get_xml_values(self, node, element_name):
-        ret = []
+    def _get_xml_values(self, node, element_name):
+        """
+        Get element values from specified node
+        """
 
         try:
+            ret = []
             for val in node.findall(element_name):
                 ret.append(val.text.strip(" "))
+
+            return ret
         except:
-            pass
+            return []
 
-        return ret
+    def _get_freqmhz(self, node):
+        """
+        Parse freqmhz element
+        """
 
-    """Parse freqmhz elements"""
-    def get_freqmhz(self, node):
-        freqmhz = {}
         try:
+            freqmhz = {}
+
             for freq in node.findall("freqmhz"):
                 f = freq.text.split(" ")
                 freqmhz[f[0]] = int(f[1])
+
+            return freqmhz
+
         except:
-            pass
+            return {}
 
-        return freqmhz
+    def _get_cloaked(self, node):
+        """
+        Wireless is cloaked or no
+        """
 
-    """Wireless is cloaked or no"""
-    def get_cloaked(self, node):
         essid = node.findall("essid")
 
         if not essid:
             return False
 
-        return self.get_xml_element_value(essid[0], "cloaked", False)
+        return self._get_xml_element_value(essid[0], "cloaked", False)
 
     def _get_multiple_values(self, node, elements, element, default):
         out = OrderedDict()
 
         for el in elements:
-            out[el.lower().replace("-", "_")] = self.get_xml_element_value(
+            out[el.lower().replace("-", "_")] = self._get_xml_element_value(
                 node, element + "/" + el, default)
 
         return out
 
-    def get_dot11d(self, node):
+    def _get_dot11d(self, node):
+        """
+        Get dot11 attributes
+        """
+
         try:
             dot11d = node.findall("dot11d")[0]
         except:
@@ -268,77 +297,92 @@ class ParseNetxml(object):
 
         out = {}
 
-        out["country"] = self.get_xml_attrib(dot11d, "country").strip(" ")
+        out["country"] = self._get_xml_attrib(dot11d, "country").strip(" ")
         out["range"] = []
 
         try:
             for d in dot11d.findall("dot11d-range"):
                 out["range"].append(OrderedDict([
-                    ("start", self.get_xml_attrib(d, "start", 0)),
-                    ("end", self.get_xml_attrib(d, "end", 0)),
-                    ("max_power", self.get_xml_attrib(d, "max-power", 0)),
+                    ("start", self._get_xml_attrib(d, "start", 0)),
+                    ("end", self._get_xml_attrib(d, "end", 0)),
+                    ("max_power", self._get_xml_attrib(d, "max-power", 0)),
                 ]))
         except:
             pass
 
         return out
 
-    def get_tags(self, node):
+    def _get_tags(self, node):
         out = {}
 
         for t in node.findall("tag"):
-            name = self.get_xml_attrib(t, "name", "")
+            name = self._get_xml_attrib(t, "name", "")
 
             out[name] = t.text.strip(" ")
 
         return out
 
-    """Get whole gps-info element"""
-    def get_gpsinfo(self, node):
+    def _get_gpsinfo(self, node):
+        """
+        Get whole gps-info element
+        """
+
         return self._get_multiple_values(node, self.gps_info_elements,
                                          "gps-info", .0)
 
-    """Get whole snr-info element"""
-    def get_snr(self, node):
+    def _get_snr(self, node):
+        """
+        Get whole snr-info element
+        """
+
         return self._get_multiple_values(node, self.snr_elements, "snr-info", 0)
 
-    """Get whole packets element"""
-    def get_packets(self, node):
+    def _get_packets(self, node):
+        """
+        Get whole packets element
+        """
+
         return self._get_multiple_values(node, self.packets_elements,
                                          "packets", 0)
 
-    """Get whole seen-card element"""
-    def get_seencards(self, node):
-        seencards = {}
+    def _get_seencards(self, node):
+        """
+        Get whole seen-card element
+        """
 
         try:
+            seencards = {}
+
             for card in node.findall("seen-card"):
-                uuid = self.get_xml_element_value(card, "seen-uuid", "")
+                uuid = self._get_xml_element_value(card, "seen-uuid", "")
 
                 if not uuid:
                     continue
 
                 seencards[uuid] = {
-                    "time": self._dc.get(
-                        self.get_xml_element_value(card, "seen-time", "")),
-                    "packets": self.get_xml_element_value(card,
-                                                          "seen-packets", 0)
+                    "time": self._dc.get(self._get_xml_element_value(
+                        card, "seen-time", "")),
+                    "packets": self._get_xml_element_value(
+                        card, "seen-packets", 0)
                 }
+
+            return seencards
         except:
-            pass
+            return {}
 
-        return seencards
+    def _get_ipaddress(self, node):
+        """
+        Get ip-address element
+        """
 
-    """Get ip-address element"""
-    def get_ipaddress(self, node):
         try:
             ip = node.findall("ip-address")[0]
 
             return OrderedDict((
-                ("ip_type", self.get_xml_attrib(ip, "type", "Unknown")),
-                ("ip_block", self.get_xml_element_value(ip, "ip-block")),
-                ("ip_netmask", self.get_xml_element_value(ip, "ip-netmask")),
-                ("ip_gateway", self.get_xml_element_value(ip, "ip-gateway")),
+                ("ip_type", self._get_xml_attrib(ip, "type", "Unknown")),
+                ("ip_block", self._get_xml_element_value(ip, "ip-block")),
+                ("ip_netmask", self._get_xml_element_value(ip, "ip-netmask")),
+                ("ip_gateway", self._get_xml_element_value(ip, "ip-gateway")),
             ))
         except:
             return {}
@@ -350,182 +394,194 @@ class ParseNetxml(object):
             for ssid in node.findall("SSID"):
                 ssids.append(OrderedDict((
                     ("first_time", self._dc.get(
-                        self.get_xml_attrib(ssid, "first-time"))),
+                        self._get_xml_attrib(ssid, "first-time"))),
                     ("last_time", self._dc.get(
-                        self.get_xml_attrib(ssid, "last-time"))),
-                    ("type", self.get_xml_element_value(ssid, "type")),
-                    ("max_rate", self.get_xml_element_value(
+                        self._get_xml_attrib(ssid, "last-time"))),
+                    ("type", self._get_xml_element_value(ssid, "type")),
+                    ("max_rate", self._get_xml_element_value(
                         ssid, "max-rate", .0)),
-                    ("packets", self.get_xml_element_value(ssid, "packets", 0)),
+                    ("packets", self._get_xml_element_value(
+                        ssid, "packets", 0)),
 
-                    ("beaconrate", self.get_xml_element_value(
+                    ("beaconrate", self._get_xml_element_value(
                         ssid, "beaconrate", 0)),
 
                     # Since Kismet-2016.01.R1
-                    ("wps", self.get_xml_element_value(ssid, "wps", "No")),
-                    ("wps_manuf", self.get_xml_element_value(
+                    ("wps", self._get_xml_element_value(ssid, "wps", "No")),
+                    ("wps_manuf", self._get_xml_element_value(
                         ssid, "wps-manuf")),
-                    ("dev_name", self.get_xml_element_value(ssid, "dev-name")),
-                    ("model_name", self.get_xml_element_value(
+                    ("dev_name", self._get_xml_element_value(ssid, "dev-name")),
+                    ("model_name", self._get_xml_element_value(
                         ssid, "model-name")),
-                    ("model_num", self.get_xml_element_value(
+                    ("model_num", self._get_xml_element_value(
                         ssid, "model-num")),
 
-                    ("encryption", self.get_xml_values(ssid, "encryption")),
+                    ("encryption", self._get_xml_values(ssid, "encryption")),
 
                     # Since Kismet-2016.01.R1
-                    ("wpa_version", self.get_xml_element_value(
+                    ("wpa_version", self._get_xml_element_value(
                         ssid, "wpa-version")),
 
-                    ("dot11d", self.get_dot11d(ssid)),
+                    ("dot11d", self._get_dot11d(ssid)),
 
-                    ("essid", self.get_xml_element_value(ssid, "essid", "")),
-                    ("cloaked", self.get_cloaked(ssid)),
+                    ("essid", self._get_xml_element_value(ssid, "essid", "")),
+                    ("cloaked", self._get_cloaked(ssid)),
 
-                    ("info", self.get_xml_element_value(ssid, "info", ""))
+                    ("info", self._get_xml_element_value(ssid, "info", ""))
                 )))
         except:
             pass
 
         return ssids
 
-    """Parse SSIDS from wireless-client element"""
-    def get_client_ssids(self, node):
-        ssids = []
+    def _get_client_ssids(self, node):
+        """
+        Parse SSIDS from wireless-client element
+        """
+
         try:
+            ssids = []
+
             for ssid in node.findall("SSID"):
                 ssids.append(OrderedDict((
                     ("first_time", self._dc.get(
-                        self.get_xml_attrib(ssid, "first-time", ""))),
+                        self._get_xml_attrib(ssid, "first-time", ""))),
                     ("last_time", self._dc.get(
-                        self.get_xml_attrib(ssid, "last-time", ""))),
-                    ("type", self.get_xml_element_value(ssid, "type", "")),
-                    ("max_rate", self.get_xml_element_value(
+                        self._get_xml_attrib(ssid, "last-time", ""))),
+                    ("type", self._get_xml_element_value(ssid, "type", "")),
+                    ("max_rate", self._get_xml_element_value(
                         ssid, "max-rate", .0)),
-                    ("packets", self.get_xml_element_value(
+                    ("packets", self._get_xml_element_value(
                         ssid, "packets", 0)),
-                    ("beaconrate", self.get_xml_element_value(
+                    ("beaconrate", self._get_xml_element_value(
                         ssid, "beaconrate", 0)),
 
-                    ("dot11d", self.get_dot11d(ssid)),
-                    ("encryption", self.get_xml_values(ssid, "encryption")),
+                    ("dot11d", self._get_dot11d(ssid)),
+                    ("encryption", self._get_xml_values(ssid, "encryption")),
 
-                    ("essid", self.get_xml_element_value(ssid, "ssid", "")),
-                    ("info", self.get_xml_element_value(ssid, "info", "")),
+                    ("essid", self._get_xml_element_value(ssid, "ssid", "")),
+                    ("info", self._get_xml_element_value(ssid, "info", "")),
                 )))
+            return ssids
         except:
-            pass
+            return []
 
-        return ssids
-
-    """Fix for Bsstimestamp unsigned int 64"""
-    def get_bsstimestamp(self, node):
-        bss = self.get_xml_element_value(node, "bsstimestamp", 0)
+    def _get_bsstimestamp(self, node):
+        """
+        Fix for Bsstimestamp unsigned int 64
+        """
+        bss = self._get_xml_element_value(node, "bsstimestamp", 0)
 
         if bss > 9223372036854775807 or bss < -9223372036854775808:
             return 0
 
         return bss
 
-    """Parse wireless-network or wireless-client"""
-    def get_network(self, node, is_client=False):
+    def _get_network(self, node, is_client=False):
+        """
+        Parse wireless-network or wireless-client
+        """
+
         # Parse wireless-network
         if not is_client:
             return OrderedDict((
-                ("number", self.get_xml_attrib(node, "number", 0)),
-                ("type", self.get_xml_attrib(node, "type", "unknown")),
+                ("number", self._get_xml_attrib(node, "number", 0)),
+                ("type", self._get_xml_attrib(node, "type", "unknown")),
                 ("first_time", self._dc.get(
-                    self.get_xml_attrib(node, "first-time"))),
+                    self._get_xml_attrib(node, "first-time"))),
                 ("last_time", self._dc.get(
-                    self.get_xml_attrib(node, "last-time"))),
+                    self._get_xml_attrib(node, "last-time"))),
                 ("ssids", self.get_network_ssids(node)),
 
-                ("bssid", self.get_xml_element_value(node, "BSSID")),
-                ("manuf", self.get_xml_element_value(node, "manuf")),
-                ("channel", self.get_xml_element_value(node, "channel", 0)),
-                ("freqmhz", self.get_freqmhz(node)),
-                ("maxseenrate", self.get_xml_element_value(
+                ("bssid", self._get_xml_element_value(node, "BSSID")),
+                ("manuf", self._get_xml_element_value(node, "manuf")),
+                ("channel", self._get_xml_element_value(node, "channel", 0)),
+                ("freqmhz", self._get_freqmhz(node)),
+                ("maxseenrate", self._get_xml_element_value(
                     node, "maxseenrate", 0)),
 
-                ("carrier", self.get_xml_values(node, "carrier")),
-                ("encoding", self.get_xml_values(node, "encoding")),
+                ("carrier", self._get_xml_values(node, "carrier")),
+                ("encoding", self._get_xml_values(node, "encoding")),
 
-                ("packets", self.get_packets(node)),
-                ("datasize", self.get_xml_element_value(node, "datasize", 0)),
+                ("packets", self._get_packets(node)),
+                ("datasize", self._get_xml_element_value(node, "datasize", 0)),
 
-                ("snr_info", self.get_snr(node)),
-                ("gps_info", self.get_gpsinfo(node)),
+                ("snr_info", self._get_snr(node)),
+                ("gps_info", self._get_gpsinfo(node)),
 
-                ("tag", self.get_tags(node)),
+                ("tag", self._get_tags(node)),
 
-                ("ip_address", self.get_ipaddress(node)),
-                ("bsstimestamp", self.get_bsstimestamp(node)),
-                ("cdp_device", self.get_xml_element_value(node, "cdp-device")),
-                ("cdp_portid", self.get_xml_element_value(node, "cdp-portid")),
+                ("ip_address", self._get_ipaddress(node)),
+                ("bsstimestamp", self._get_bsstimestamp(node)),
+                ("cdp_device", self._get_xml_element_value(node, "cdp-device")),
+                ("cdp_portid", self._get_xml_element_value(node, "cdp-portid")),
 
-                ("dhcp_hostname", self.get_xml_element_value(
+                ("dhcp_hostname", self._get_xml_element_value(
                     node, "dhcp-hostname")),
-                ("dhcp_vendor", self.get_xml_element_value(
+                ("dhcp_vendor", self._get_xml_element_value(
                     node, "dhcp-vendor")),
 
-                ("seen_cards", self.get_seencards(node)),
+                ("seen_cards", self._get_seencards(node)),
             ))
         # wireless-client
         else:
             return OrderedDict((
-                ("number", self.get_xml_attrib(node, "number", 0)),
-                ("type", self.get_xml_attrib(node, "type", "unknown")),
+                ("number", self._get_xml_attrib(node, "number", 0)),
+                ("type", self._get_xml_attrib(node, "type", "unknown")),
                 ("first_time", self._dc.get(
-                    self.get_xml_attrib(node, "first-time"))),
+                    self._get_xml_attrib(node, "first-time"))),
                 ("last_time", self._dc.get(
-                    self.get_xml_attrib(node, "last-time"))),
-                ("client_mac", self.get_xml_element_value(
+                    self._get_xml_attrib(node, "last-time"))),
+                ("client_mac", self._get_xml_element_value(
                     node, "client-mac")),
-                ("client_manuf", self.get_xml_element_value(
+                ("client_manuf", self._get_xml_element_value(
                     node, "client-manuf")),
-                ("ssids", self.get_client_ssids(node)),
-                ("channel", self.get_xml_element_value(
+                ("ssids", self._get_client_ssids(node)),
+                ("channel", self._get_xml_element_value(
                     node, "channel", 0)),
-                ("freqmhz", self.get_freqmhz(node)),
-                ("maxseenrate", self.get_xml_element_value(
+                ("freqmhz", self._get_freqmhz(node)),
+                ("maxseenrate", self._get_xml_element_value(
                     node, "maxseenrate", .0)),
 
-                ("carrier", self.get_xml_values(node, "carrier")),
-                ("encoding", self.get_xml_values(node, "encoding")),
+                ("carrier", self._get_xml_values(node, "carrier")),
+                ("encoding", self._get_xml_values(node, "encoding")),
 
-                ("packets", self.get_packets(node)),
-                ("datasize", self.get_xml_element_value(
+                ("packets", self._get_packets(node)),
+                ("datasize", self._get_xml_element_value(
                     node, "datasize", 0)),
 
-                ("snr_info", self.get_snr(node)),
-                ("gps_info", self.get_gpsinfo(node)),
-                ("ip_address", self.get_ipaddress(node)),
+                ("snr_info", self._get_snr(node)),
+                ("gps_info", self._get_gpsinfo(node)),
+                ("ip_address", self._get_ipaddress(node)),
 
-                ("cdp_device", self.get_xml_element_value(
+                ("cdp_device", self._get_xml_element_value(
                     node, "cdp-device")),
-                ("cdp_portid", self.get_xml_element_value(
+                ("cdp_portid", self._get_xml_element_value(
                     node, "cdp-portid")),
 
-                ("dhcp_hostname", self.get_xml_element_value(
+                ("dhcp_hostname", self._get_xml_element_value(
                     node, "dhcp-hostname")),
-                ("dhcp_vendor", self.get_xml_element_value(
+                ("dhcp_vendor", self._get_xml_element_value(
                     node, "dhcp-vendor")),
 
-                ("seen_cards", self.get_seencards(node)),
+                ("seen_cards", self._get_seencards(node)),
 
-                ("tag", self.get_tags(node)),
+                ("tag", self._get_tags(node)),
             ))
 
-    """Parse all networks"""
     def get_networks(self):
+        """
+        Generator, return dictionary of network
+        """
+
         for net in self._netxml.findall("wireless-network"):
-            network_json = self.get_network(net, False)
+            network_json = self._get_network(net, False)
 
             clients = []
 
             # wireless-client
             for client in net.findall("wireless-client"):
-                client_json = self.get_network(client, True)
+                client_json = self._get_network(client, True)
 
                 clients.append(client_json)
 
