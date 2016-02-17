@@ -14,6 +14,15 @@ def get_asset_dic():
 
 
 class GpsnetxmlTest(unittest.TestCase):
+    def test_metadata(self):
+        net = ParseNetxml(get_asset_dic() + "/network.netxml")
+        meta = net.get_metadata()
+
+        self.assertDictEqual(meta, {
+            "kismet_version": "2013.03.R0",
+            "start_time": "2014-11-15 13:00:00"
+        })
+
     def test_get_networks(self):
         self.maxDiff = None
 
@@ -34,8 +43,17 @@ class GpsnetxmlTest(unittest.TestCase):
 
 
 class TestParseGpsxml(unittest.TestCase):
-    def test_get_points(self):
+    def test_metadata(self):
+        gps = ParseGpsxml(get_asset_dic() + "/gpspoint.gpsxml")
+        meta = gps.get_metadata()
 
+        self.assertDictEqual(meta, {
+            "gps_version": 5,
+            "start_time": "2014-11-15 14:05:57",
+            "file": "/root/kismet-log/Kismet-20141115_14-05-58.netxml"
+        })
+
+    def test_get_points(self):
         gps_points = {
             "gpspoint": ParseGpsxml.GPS_POINTS_ALL,
             "gpspoint_tracks": ParseGpsxml.GPS_POINTS_TRACKS,

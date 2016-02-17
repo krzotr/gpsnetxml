@@ -8,14 +8,41 @@ import xml.etree.ElementTree as et
 from collections import OrderedDict
 
 
+class DateConv(object):
+    """
+    Convert datetime e.g. Sat Nov 15 14:05:57 2014 to 2014-11-15 14:05:57
+    """
+
+    DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+    def __init__(self, date_format=None):
+        if date_format is None:
+            date_format = DateConv.DATE_FORMAT
+
+        self._date_format = date_format
+
+    def set(self, date_format):
+        self._date_format = date_format
+
+    def get(self, dt):
+        date_time = time.strptime(dt, "%a %b %d %H:%M:%S %Y")
+
+        return time.strftime(self._date_format, date_time)
+
+
 class ParseGpsxml(object):
+    """
+    Convert gos.xml file to json format. Based on dumpfile_gpsxml.cc
+    """
+
     GPS_POINTS_NETWORKS = 1
     GPS_POINTS_TRACKS = 2
     GPS_POINTS_ZEROS = 4
     GPS_POINTS_ALL = 7
 
-    """Based on dumpfile_gpsxml.cc"""
-    def __init__(self, file, gps_points=None):
+    def __init__(self, file, gps_points=None, date_format=None):
+        self._dc = DateConv(date_format)
+
         self._file = file
 
         if gps_points is None:
@@ -25,6 +52,30 @@ class ParseGpsxml(object):
             raise Exception("Ïnvalid gps_points parameter")
 
         self._gps_points = gps_points
+
+    def get_metadata(self):
+        """
+        Get metadata like gps_version, start_time and file
+        """
+
+        try:
+            out = {}
+            for event, el in et.iterparse(self._file, events=("start", "end")):
+
+                # First element
+                if el.tag == "gps-run":
+                    attr = el.attrib
+                    out["gps_version"] = int(attr["gps-version"])
+                    out["start_time"] = self._dc.get(attr["start-time"])
+                    continue
+
+                # Second (last) element
+                if el.tag == "network-file":
+                    out["file"] = el.text
+                    return out
+
+        except:
+            return {}
 
     def get_points(self):
         for event, el in et.iterparse(self._file, events=("start", "end")):
@@ -87,7 +138,9 @@ class ParseGpsxml(object):
 
 
 class ParseNetxml(object):
-    """Based on dumpfile_netxml.cc"""
+    """
+    Convert gos.xml file to json format. Based on dumpfile_netxml.cc
+    """
 
     gps_info_elements = ("min-lat", "min-lon", "min-alt", "min-spd",
                          "max-lat", "max-lon", "max-alt", "max-spd",
@@ -103,15 +156,27 @@ class ParseNetxml(object):
 
     packets_elements = ("LLC", "data", "crypt", "total", "fragments", "retries")
 
-    def __init__(self, file, date_format="%Y-%m-%d %H:%M:%S"):
+    def __init__(self, file, date_format=None):
+        self._dc = DateConv(date_format)
+
         self._file = file
         self._netxml = et.parse(self._file)
-        self._date_format = date_format
 
-    def get_datetime(self, dt):
-        date_time = time.strptime(dt, "%a %b %d %H:%M:%S %Y")
+    def get_metadata(self):
+        """
+        Get metadata like kismet_version and start_time
+        """
 
-        return time.strftime(self._date_format, date_time)
+        try:
+            for event, el in et.iterparse(self._file, events=("start", "end")):
+                attr = el.attrib
+
+                return {
+                    "kismet_version": attr["kismet-version"],
+                    "start_time": self._dc.get(attr["start-time"])
+                }
+        except:
+            return {}
 
     """Typecast to type of first parameter"""
     def ret_val(self, default, val):
@@ -254,7 +319,7 @@ class ParseNetxml(object):
                     continue
 
                 seencards[uuid] = {
-                    "time": self.get_datetime(
+                    "time": self._dc.get(
                         self.get_xml_element_value(card, "seen-time", "")),
                     "packets": self.get_xml_element_value(card,
                                                           "seen-packets", 0)
@@ -284,9 +349,9 @@ class ParseNetxml(object):
         try:
             for ssid in node.findall("SSID"):
                 ssids.append(OrderedDict((
-                    ("first_time", self.get_datetime(
+                    ("first_time", self._dc.get(
                         self.get_xml_attrib(ssid, "first-time"))),
-                    ("last_time", self.get_datetime(
+                    ("last_time", self._dc.get(
                         self.get_xml_attrib(ssid, "last-time"))),
                     ("type", self.get_xml_element_value(ssid, "type")),
                     ("max_rate", self.get_xml_element_value(
@@ -330,9 +395,9 @@ class ParseNetxml(object):
         try:
             for ssid in node.findall("SSID"):
                 ssids.append(OrderedDict((
-                    ("first_time", self.get_datetime(
+                    ("first_time", self._dc.get(
                         self.get_xml_attrib(ssid, "first-time", ""))),
-                    ("last_time", self.get_datetime(
+                    ("last_time", self._dc.get(
                         self.get_xml_attrib(ssid, "last-time", ""))),
                     ("type", self.get_xml_element_value(ssid, "type", "")),
                     ("max_rate", self.get_xml_element_value(
@@ -369,9 +434,9 @@ class ParseNetxml(object):
             return OrderedDict((
                 ("number", self.get_xml_attrib(node, "number", 0)),
                 ("type", self.get_xml_attrib(node, "type", "unknown")),
-                ("first_time", self.get_datetime(
+                ("first_time", self._dc.get(
                     self.get_xml_attrib(node, "first-time"))),
-                ("last_time", self.get_datetime(
+                ("last_time", self._dc.get(
                     self.get_xml_attrib(node, "last-time"))),
                 ("ssids", self.get_network_ssids(node)),
 
@@ -410,9 +475,9 @@ class ParseNetxml(object):
             return OrderedDict((
                 ("number", self.get_xml_attrib(node, "number", 0)),
                 ("type", self.get_xml_attrib(node, "type", "unknown")),
-                ("first_time", self.get_datetime(
+                ("first_time", self._dc.get(
                     self.get_xml_attrib(node, "first-time"))),
-                ("last_time", self.get_datetime(
+                ("last_time", self._dc.get(
                     self.get_xml_attrib(node, "last-time"))),
                 ("client_mac", self.get_xml_element_value(
                     node, "client-mac")),
