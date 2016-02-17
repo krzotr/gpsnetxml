@@ -38,8 +38,8 @@
                         }
                     ]
                 }, 
-                "essid": "EssD", 
-                "cloaked": false, 
+                "essid": "", 
+                "cloaked": true, 
                 "info": "This is first SSID Info"
             }, 
             {

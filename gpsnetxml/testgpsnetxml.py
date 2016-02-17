@@ -13,7 +13,7 @@ def get_asset_dic():
     return os.path.dirname(os.path.realpath(__file__)) + "/asset"
 
 
-class GpsnetxmlTest(unittest.TestCase):
+class TestParseNetxml(unittest.TestCase):
     def test_metadata(self):
         net = ParseNetxml(get_asset_dic() + "/network.netxml")
         meta = net.get_metadata()
@@ -40,6 +40,36 @@ class GpsnetxmlTest(unittest.TestCase):
         self.assertMultiLineEqual(
             expected, json.dumps(data, indent=4)
         )
+
+    def test_ret_val(self):
+        net = ParseNetxml(get_asset_dic() + "/network.netxml")
+
+        self.assertEqual(0, net._ret_val(0, ""))
+        self.assertEqual(5, net._ret_val(0, "5"))
+        self.assertEqual(10, net._ret_val(0, 10))
+
+        self.assertEqual(.0, net._ret_val(.0, ""))
+        self.assertEqual(.2, net._ret_val(.0, "0.2"))
+        self.assertEqual(.5, net._ret_val(.0, .5))
+
+        self.assertEqual(True, net._ret_val(True, ""))
+        self.assertEqual(True, net._ret_val(True, True))
+        self.assertEqual(True, net._ret_val(True, "true"))
+        self.assertEqual(True, net._ret_val(True, False))
+        self.assertEqual(False, net._ret_val(True, "false"))
+
+        self.assertEqual(False, net._ret_val(False, ""))
+        self.assertEqual(True, net._ret_val(False, True))
+        self.assertEqual(True, net._ret_val(False, "true"))
+        self.assertEqual(False, net._ret_val(False, False))
+        self.assertEqual(False, net._ret_val(False, "false"))
+
+        self.assertEqual("", net._ret_val("", None))
+        self.assertEqual("", net._ret_val("", ""))
+        self.assertEqual("0", net._ret_val("", "0"))
+        self.assertEqual("def", net._ret_val("def", None))
+        self.assertEqual("def", net._ret_val("def", ""))
+        self.assertEqual("TeST", net._ret_val("", "TeST"))
 
 
 class TestParseGpsxml(unittest.TestCase):

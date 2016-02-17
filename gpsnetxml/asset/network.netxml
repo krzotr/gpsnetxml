@@ -40,7 +40,7 @@
                 <dot11d-range start="1" end="5" max-power="20" />
                 <dot11d-range start="6" end="13" max-power="25" />
             </dot11d>
-            <essid cloaked="true">EssD</essid>
+            <essid cloaked="true"></essid>
             <info>This is first SSID Info</info>
         </SSID>
         <SSID first-time="Sat Nov 15 14:20:00 2014" last-time="Sat Nov 15 14:20:59 2014">

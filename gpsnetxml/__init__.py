@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import json
 import time
 import xml.etree.ElementTree as et
 
@@ -189,6 +188,9 @@ class ParseNetxml(object):
         Typecast to type of first parameter
         """
 
+        if not val or val is None:
+            return default
+
         tp = type(default)
 
         if tp == int:
@@ -198,7 +200,10 @@ class ParseNetxml(object):
             return float(val)
 
         if tp == bool:
-            return json.loads(val)
+            if type(val) == bool:
+                return val
+
+            return True if val.lower() == "true" else False
 
         return str(val)
 
@@ -274,7 +279,7 @@ class ParseNetxml(object):
         if not essid:
             return False
 
-        return self._get_xml_element_value(essid[0], "cloaked", False)
+        return self._get_xml_attrib(essid[0], "cloaked", False)
 
     def _get_multiple_values(self, node, elements, element, default):
         out = OrderedDict()
@@ -459,6 +464,7 @@ class ParseNetxml(object):
                     ("dot11d", self._get_dot11d(ssid)),
                     ("encryption", self._get_xml_values(ssid, "encryption")),
 
+                    # Rename ssid to essid
                     ("essid", self._get_xml_element_value(ssid, "ssid", "")),
                     ("info", self._get_xml_element_value(ssid, "info", "")),
                 )))
