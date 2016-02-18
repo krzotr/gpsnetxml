@@ -7,10 +7,24 @@ import os
 
 from gpsnetxml import ParseGpsxml
 from gpsnetxml import ParseNetxml
+from gpsnetxml import DateConv
 
 
 def get_asset_dic():
     return os.path.dirname(os.path.realpath(__file__)) + "/asset"
+
+
+class TestDateConv(unittest.TestCase):
+    def test_get_date(self):
+        date = DateConv()
+
+        self.assertEqual(date.get("Sat Nov 15 14:05:57 2014"),
+                         "2014-11-15 14:05:57")
+
+        date.set("%Y-%m-%dT%H:%M:%SZ")
+
+        self.assertEqual(date.get("Mon Nov 16 11:22:33 2014"),
+                         "2014-11-16T11:22:33Z")
 
 
 class TestParseNetxml(unittest.TestCase):
@@ -35,11 +49,9 @@ class TestParseNetxml(unittest.TestCase):
 
         expected = ""
         with open(get_asset_dic() + "/network.netxml.json") as f:
-            expected = f.read()
+            expected = json.loads(f.read())
 
-        self.assertMultiLineEqual(
-            expected, json.dumps(data, indent=4)
-        )
+        self.assertListEqual(expected, data)
 
     def test_ret_val(self):
         net = ParseNetxml(get_asset_dic() + "/network.netxml")
@@ -91,7 +103,7 @@ class TestParseGpsxml(unittest.TestCase):
             "gpspoint_networks": ParseGpsxml.GPS_POINTS_NETWORKS
         }
 
-        for filename, gps_point in gps_points.iteritems():
+        for filename, gps_point in gps_points.items():
             gps = ParseGpsxml(get_asset_dic() + "/gpspoint.gpsxml", gps_point)
 
             data = []
@@ -101,16 +113,21 @@ class TestParseGpsxml(unittest.TestCase):
 
             expected = ""
             with open(get_asset_dic() + "/" + filename + ".gpsxml.json") as f:
-                expected = f.read()
+                expected = json.loads(f.read())
 
-            self.assertMultiLineEqual(
-                expected, json.dumps(data, indent=4)
-            )
+            self.assertListEqual(expected, data)
 
     def test_get_points_invalid_parameter(self):
         self.assertRaises(Exception, ParseGpsxml,
                           get_asset_dic() + "/gpspoint.gpsxml", 0)
 
 
-if __name__ == '__main__':
-    unittest.main()
+if __name__ == "__main__":
+    import sys
+
+    version = list(sys.version_info)[0]
+
+    if version == 3:
+        unittest.main(warnings="ignore")
+    else:
+        unittest.main()
