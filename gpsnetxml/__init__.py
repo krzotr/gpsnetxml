@@ -68,13 +68,14 @@ class ParseGpsxml(object):
                     attr = el.attrib
                     out["gps_version"] = int(attr["gps-version"])
                     out["start_time"] = self._dc.get(attr["start-time"])
+                    el.clear()
                     continue
 
                 # Second (last) element
                 if el.tag == "network-file":
                     out["file"] = el.text
+                    el.clear()
                     return out
-
         except:
             return {}
 
@@ -94,28 +95,31 @@ class ParseGpsxml(object):
 
             if (attr["bssid"] == "GP:SD:TR:AC:KL:OG"
                 and not (self._gps_points & ParseGpsxml.GPS_POINTS_TRACKS)):
+                el.clear()
                 continue
 
             if (attr["bssid"] == "00:00:00:00:00:00"
                 and attr["source"] == "00:00:00:00:00:00"
                 and not (self._gps_points & ParseGpsxml.GPS_POINTS_ZEROS)):
+                el.clear()
                 continue
 
             if (attr["bssid"] != "GP:SD:TR:AC:KL:OG"
                 and attr["bssid"] != "00:00:00:00:00:00"
                 and attr["source"] != "00:00:00:00:00:00"
                 and not (self._gps_points & ParseGpsxml.GPS_POINTS_NETWORKS)):
+                el.clear()
                 continue
 
             # Common for all gps_points types
-            out = OrderedDict([
-                ("bssid", attr["bssid"])
-            ])
+            out = OrderedDict((
+                ("bssid", attr["bssid"]),
+            ))
 
             if attr["bssid"] != "GP:SD:TR:AC:KL:OG":
-                out.update(OrderedDict([
-                    ("source", attr.get("source"))
-                ]))
+                out.update(OrderedDict((
+                    ("source", attr.get("source")),
+                )))
 
             # Common for all gps_point types
             out.update(OrderedDict((
@@ -138,6 +142,8 @@ class ParseGpsxml(object):
                     ("signal_dbm", int(attr.get("signal_dbm", 0))),
                     ("noise_dbm", int(attr.get("noise_dbm", 0)))
                 )))
+
+            el.clear()
 
             yield out
 
@@ -181,7 +187,9 @@ class ParseNetxml(object):
                     "start_time": self._dc.get(attr["start-time"])
                 }
         except:
-            return {}
+            pass
+
+        return {}
 
     def _ret_val(self, default, val):
         """
@@ -245,12 +253,15 @@ class ParseNetxml(object):
 
         try:
             ret = []
+
             for val in node.findall(element_name):
                 ret.append(val.text.strip(" "))
 
             return ret
         except:
-            return []
+            pass
+
+        return ()
 
     def _get_freqmhz(self, node):
         """
@@ -265,9 +276,10 @@ class ParseNetxml(object):
                 freqmhz[f[0]] = int(f[1])
 
             return freqmhz
-
         except:
-            return {}
+            pass
+
+        return {}
 
     def _get_cloaked(self, node):
         """
@@ -373,7 +385,9 @@ class ParseNetxml(object):
 
             return seencards
         except:
-            return {}
+            pass
+
+        return {}
 
     def _get_ipaddress(self, node):
         """
@@ -390,12 +404,15 @@ class ParseNetxml(object):
                 ("ip_gateway", self._get_xml_element_value(ip, "ip-gateway")),
             ))
         except:
-            return {}
+            pass
+
+        return {}
 
     """Get SSIDS in wireless-network element"""
     def get_network_ssids(self, node):
-        ssids = []
         try:
+            ssids = []
+
             for ssid in node.findall("SSID"):
                 ssids.append(OrderedDict((
                     ("first_time", self._dc.get(
@@ -468,9 +485,12 @@ class ParseNetxml(object):
                     ("essid", self._get_xml_element_value(ssid, "ssid", "")),
                     ("info", self._get_xml_element_value(ssid, "info", "")),
                 )))
+
             return ssids
         except:
-            return []
+            pass
+
+        return ()
 
     def _get_bsstimestamp(self, node):
         """
