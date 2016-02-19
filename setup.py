@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(name="gpsnetxml",
       version="1.0.0",
@@ -12,7 +12,10 @@ setup(name="gpsnetxml",
       long_description="""Convert gpsxml and netxml files to JSON format""",
       packages=["gpsnetxml"],
       scripts=['bin/gpsnetxml'],
-      package_data={"gpsnetxml": ["asset/*"]},
+      package_data={"gpsnetxml": ["asset/*.netxml",
+                                  "asset/*.json",
+                                  "asset/*.gpsxml",
+                                  "asset/xsd/*"]},
       classifiers=["Programming Language :: Python",
                    "Topic :: Internet :: Log Analysis",
                    "Topic :: System :: Networking",
